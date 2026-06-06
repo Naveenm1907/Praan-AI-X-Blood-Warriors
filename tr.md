@@ -343,18 +343,20 @@ BEDROCK_MODEL_ID=anthropic.claude-3-sonnet
 #### Person A (Frontend Lead)
 
 **Responsibilities**:
-- Next.js frontend architecture
+- Next.js frontend architecture (Coordinator + Patient + Blood Bank portals only)
 - UI/UX design implementation
 - API integration (React Query)
 - Vercel deployment
 - Demo rehearsal
+
+**Note: NO Donor Portal.** Donors already exist in Blood Warriors data (Dataset.md, 100 records). They receive WhatsApp messages and voice calls, they do not log into a portal. This saves ~3 hours of frontend work.
 
 **Hour-by-Hour Plan**:
 
 | Hour | Task | Deliverable |
 |------|------|-------------|
 | 1-2 | Setup | Next.js project, Tailwind, shadcn/ui, Vercel deploy, Cognito auth |
-| 3-5 | Patient + Donor Portals | Patient registration, medical report upload, status tracker, donor login, profile, history, badges |
+| 3-5 | Patient Portal + Blood Bank Portal | Patient registration, medical report upload, status tracker, blood bank inventory update form |
 | 6-8 | Coordinator Dashboard | Active requests table, donor matching view (top 20 with scores, map), WhatsApp campaign progress, voice call progress, blood bank inventory heatmap, document verification queue |
 | 9-10 | Polish + Demo | Loading states, error handling, mock data (100 donors from Dataset.md), demo rehearsal |
 
@@ -367,14 +369,16 @@ BEDROCK_MODEL_ID=anthropic.claude-3-sonnet
 - AWS integrations (Textract, Polly, Connect)
 - Communication services (WhatsApp, voice calls)
 
+**Note: Donor data comes from Dataset.md (100 pre-existing donors).** No donor registration API needed. Donors are matched algorithmically, then contacted via WhatsApp/voice calls.
+
 **Hour-by-Hour Plan**:
 
 | Hour | Task | Deliverable |
 |------|------|-------------|
-| 1-2 | Setup | FastAPI project, DynamoDB tables (donors, patients, requests, blood_banks), S3 bucket |
+| 1-2 | Setup | FastAPI project, DynamoDB tables (patients, requests, blood_banks), load Dataset.md into DynamoDB (100 donors), S3 bucket |
 | 3-5 | Core Services | Document Verifier (Textract OCR + AI model), Urgency Calculator, Donor Matching Engine (readiness score), Inventory service |
 | 6-8 | Communication Services | WhatsApp service (Twilio), voice call service (Exotel/Twilio), webhook handlers, notification system |
-| 9-10 | Integration | Connect frontend to backend, load Dataset.md into DynamoDB (100 donors), test end-to-end flow, prepare failure case answers |
+| 9-10 | Integration | Connect frontend to backend, test end-to-end flow, prepare failure case answers |
 
 ---
 
@@ -446,7 +450,7 @@ def test_blood_group_compatibility():
 1. Patient registers → uploads medical report
 2. Document verifier extracts Hb=6.8, Ferritin=12, last_transfusion=2025-08-02
 3. Urgency calculator returns 4-day window
-4. Coordinator clicks "Find Donors"
+4. Coordinator clicks "Find Donors" (system uses 100 pre-loaded donors from Dataset.md)
 5. Donor matching returns top 20 with scores
 6. Coordinator starts WhatsApp campaign → 50 messages sent → 8 reply yes
 7. AI calls 8 donors → 5 confirm
@@ -458,16 +462,20 @@ def test_blood_group_compatibility():
 - Edge case (OCR misreads Hb, flag for human review)
 - Race condition (multiple patients reserve same blood bank stock)
 
+**Note**: No donor self-registration testing needed. Donors exist in system from Dataset.md seed data.
+
 ### Demo Testing (Both, Hour 10)
 
 **Pre-Demo Checklist**:
 - [ ] Patient registration works (form submit → DynamoDB write)
 - [ ] Medical report upload works (S3 upload → Textract OCR → field extraction)
-- [ ] Donor matching works (returns top 20 with correct scores)
+- [ ] Donor matching works (returns top 20 with correct scores from 100 pre-loaded donors)
 - [ ] WhatsApp campaign works (messages sent → replies tracked)
 - [ ] Coordinator dashboard updates in real-time
 - [ ] Blood bank inventory displays correctly
 - [ ] Document verification queue shows pending approvals
+
+**Note**: No donor portal testing needed. Donors receive WhatsApp/voice calls, don't log in.
 
 **Fallback Plan**:
 - If live demo fails → show pre-recorded video
@@ -502,14 +510,14 @@ def test_blood_group_compatibility():
 - Patient registration form (name, age, blood group, hospital, location)
 - Medical report upload UI (PDF/image)
 - Status tracker (urgency countdown display)
-- Donor login + profile page
-- Donor history + badges
+- Blood bank portal (inventory update form for hospital staff)
 
 **Person B**:
 - Document Verifier (Textract OCR + field extraction + confidence scoring)
 - Urgency Calculator (Hb, Ferritin, days_since_last_transfusion)
 - Donor Matching Engine (readiness score using Dataset.md parameters)
 - Inventory service (mock eRaktKosh data)
+- Load Dataset.md into DynamoDB (100 donors pre-loaded)
 
 ### Hour 5-7: Communication
 **Person A**:
@@ -549,10 +557,14 @@ def test_blood_group_compatibility():
 
 ### What to BUILD (show working):
 1. **Document Verifier** — Textract OCR extracts Hb, Ferritin, dates from medical report
-2. **Donor Matching Engine** — Readiness score algorithm ranks top 20 donors
+2. **Donor Matching Engine** — Readiness score algorithm ranks top 20 donors (from 100 pre-loaded donors in Dataset.md)
 3. **Urgency Calculator** — Calculates 4-day window from OCR data
 4. **Coordinator Dashboard** — Active requests, donor matching, WhatsApp/call progress
 5. **WhatsApp Campaign** — Send messages, track replies (Twilio integration)
+6. **Patient Portal** — Patient registers, uploads report, sees status
+7. **Blood Bank Portal** — Hospital staff updates inventory
+
+**Note**: No donor portal. Donors already exist in system (Blood Warriors data), receive WhatsApp/voice calls only.
 
 ### What to FAKE (explain architecture):
 1. **Bedrock Chatbot** — Show UI, explain "we use Bedrock Claude for conversational AI"
@@ -578,7 +590,7 @@ def test_blood_group_compatibility():
 - Donation day → reminder sent → donor donates → feedback collected
 - Donor retention → show badge "5 Lives Saved"
 
-**Closing**: "We built PRAAN AI in 10 hours. Document verification, donor matching, WhatsApp campaigns, voice calls. Real data from Blood Warriors. Ready to deploy."
+**Closing**: "We built PRAAN AI in 10 hours. Document verification, donor matching (100 pre-existing Blood Warriors donors), WhatsApp campaigns, voice calls. Real data from Blood Warriors. Ready to deploy."
 
 ---
 
@@ -641,11 +653,13 @@ def test_blood_group_compatibility():
 ### Hackathon Demo Success
 - [ ] Patient registration works end-to-end
 - [ ] Document verifier extracts fields with >80% confidence
-- [ ] Donor matching returns top 20 with correct scores
+- [ ] Donor matching returns top 20 with correct scores (from 100 pre-loaded donors)
 - [ ] WhatsApp campaign sends 50 messages, tracks 8 replies
 - [ ] Coordinator dashboard updates in real-time
 - [ ] Demo completes in <3 minutes
 - [ ] Jury asks questions about failure cases (shows interest)
+
+**Note**: Donor portal not required. System uses existing Blood Warriors donor data.
 
 ### Production Success (6 months)
 - Reduce coordinator time from 2 hours → 5 minutes per patient

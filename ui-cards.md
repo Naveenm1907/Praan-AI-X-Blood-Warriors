@@ -10,56 +10,61 @@
 ### Color Palette
 ```css
 /* Primary */
---red:        #FD6666;   /* Blood/action color */
---orange:     #FCAA49;   /* Warning/urgency */
---blue:       #41A7F1;   /* Info/calling */
---teal:       #64FFE3;   /* Success/confirmed */
---pink:       #FF5678;   /* Highlight/important */
---purple:     #AE41F1;   /* AI/intelligence */
---green:      #29D64F;   /* Positive/available */
+--red:        oklch(0.65 0.18 25);     /* Blood/action */
+--orange:     oklch(0.72 0.15 55);     /* Warning/urgency */
+--blue:       oklch(0.68 0.14 240);    /* Info/calling */
+--teal:       oklch(0.78 0.12 175);    /* Success/confirmed */
+--pink:       oklch(0.62 0.19 10);     /* Highlight/important */
+--green:      oklch(0.68 0.16 145);    /* Positive/available */
 
 /* Backgrounds (Dark Theme) */
---bg-primary:   #0F1117;
---bg-card:      #1A1D27;
---bg-card-hover:#242836;
---bg-surface:   #141720;
+--bg-primary:   oklch(0.15 0.008 25);
+--bg-card:      oklch(0.20 0.008 25);
+--bg-card-hover:oklch(0.25 0.008 25);
+--bg-surface:   oklch(0.17 0.008 25);
 
 /* Text */
---text-primary:   #FFFFFF;
---text-secondary: #A0A3B1;
---text-muted:     #6B6E7B;
+--text-primary:   oklch(0.98 0.005 25);
+--text-secondary: oklch(0.72 0.008 25);
+--text-muted:     oklch(0.52 0.008 25);
 
 /* Borders */
---border:       #2A2D3A;
---border-focus: #41A7F1;
+--border:       oklch(0.28 0.008 25);
+--border-focus: oklch(0.68 0.14 240);
 ```
 
 ### Typography
-- **Headings**: Inter, 700 weight
-- **Body**: Inter, 400 weight
-- **Mono**: JetBrains Mono (for data values, countdown timers)
-- **H1**: 2.5rem, **H2**: 2rem, **H3**: 1.5rem, **Body**: 1rem, **Small**: 0.875rem
+- **Display/Headlines**: Satoshi, 700 weight
+- **Body**: Spectral, 400 weight
+- **Mono/Data**: JetBrains Mono (countdown timers, scores, metrics)
+- **Scale**:
+  - Display: 3.5rem, tracking-tighter, leading-none
+  - H1: 2.5rem, tracking-tight
+  - H2: 2rem, tracking-tight
+  - H3: 1.5rem
+  - Body: 1rem, leading-relaxed, max-width 65ch
+  - Small: 0.875rem
+  - Caption: 0.75rem
 
 ### Spacing
 - Base unit: 4px
-- Card padding: 24px
-- Section gap: 32px
+- Card padding: 24px (p-6)
+- Section gap: 48px (varied for rhythm, not uniform)
 - Grid gap: 16px
 - Component gap: 8px
 
 ### Border Radius
-- Cards: 16px
-- Buttons: 12px
-- Inputs: 10px
-- Badges: 8px
+- Cards: 16px (rounded-2xl)
+- Buttons: 10px (rounded-lg)
+- Inputs: 8px (rounded-md)
+- Badges: 6px (rounded-md)
 - Avatars: 50% (full round)
 
-### Shadows
+### Shadows (tinted to background)
 ```css
---shadow-card: 0 4px 24px rgba(0,0,0,0.3);
---shadow-hover: 0 8px 32px rgba(0,0,0,0.4);
---shadow-glow-red: 0 0 20px rgba(253,102,102,0.3);
---shadow-glow-teal: 0 0 20px rgba(100,255,227,0.3);
+--shadow-card: 0 4px 24px -8px oklch(0.15 0.008 25 / 0.4);
+--shadow-hover: 0 8px 32px -8px oklch(0.15 0.008 25 / 0.5);
+--shadow-subtle: 0 2px 8px -2px oklch(0.15 0.008 25 / 0.3);
 ```
 
 ---
@@ -71,18 +76,18 @@
 #### Navbar
 ```
 ┌──────────────────────────────────────────────────────────┐
-│ [PRAAN AI] × [Blood Warriors]    Home  Demo  About  Login│
+│ [PRAAN AI] [Blood Warriors]    Home  Demo  About  Login  │
 └──────────────────────────────────────────────────────────┘
 Height: 64px, Background: bg-primary, Border-bottom: border
-Logo: "PRAAN AI" text with heart icon (red) + "×" + Blood Warriors text
+Logo: "PRAAN AI" text with heart icon (--red) + separator + Blood Warriors text
 Nav links: text-secondary, hover: text-primary
-Active link: underline with --red
+Active link: text-primary + underline (--red, 2px)
 ```
 
 #### Footer
 ```
 ┌──────────────────────────────────────────────────────────┐
-│ PRAAN AI × Blood Warriors                                │
+│ PRAAN AI [Blood Warriors]                                │
 │ AI for Good 2.0 Hackathon | Built with AWS              │
 │ Links: Problem Statement | Dataset | Architecture        │
 └──────────────────────────────────────────────────────────┘
@@ -105,21 +110,21 @@ Border: 1px solid border
 Border-radius: 16px
 Padding: 24px
 Shadow: shadow-card
-Hover: bg-card-hover + shadow-hover
-Transition: all 0.2s ease
+Hover: bg-card-hover + shadow-hover + translate-y-[-1px]
+Transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1)
 ```
 
 #### StatCard
 ```
 ┌──────────────────────┐
-│  🩸 5,596            │
-│  Registered Donors    │
-│  ↑ 12% this month    │
+│  [Icon] 5,596        │
+│  Registered Donors   │
+│  +12% this month     │
 └──────────────────────┘
-Top: Icon (40px circle, colored background)
-Middle: Value (2rem, 700 weight, text-primary)
+Top: Icon (40px circle, colored background with 10% opacity)
+Middle: Value (2rem, 700 weight, text-primary, font-mono)
 Bottom: Label (0.875rem, text-secondary)
-Optional: Trend badge (green/red)
+Optional: Trend badge (green/red, 0.75rem)
 ```
 
 #### Button
@@ -136,34 +141,37 @@ Sizes:
 - Medium: padding 12px 24px, font 1rem
 - Large: padding 16px 32px, font 1.125rem
 
-All: border-radius 12px, font-weight 600, transition 0.2s
+All: border-radius 10px, font-weight 600
+Hover: translate-y-[-1px]
+Active: translate-y-[1px] or scale-[0.98]
+Transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1)
 ```
 
 #### Badge
 ```
 Variants:
-- Blood Group: Rounded pill, bg varies by group, text white, font-mono
-  O+: #FD6666, A+: #41A7F1, B+: #FCAA49, AB+: #AE41F1
-  O-: #FF5678, A-: #64FFE3, B-: #29D64F, AB-: #FFFFFF
+- Blood Group: Rounded pill, bg varies by group (10% opacity), text colored, font-mono
+  O+: --red, A+: --blue, B+: --orange, AB+: purple
+  O-: --pink, A-: --teal, B-: --green, AB-: text-primary
 
 - Status: Rounded pill, dot + text
   Active: green dot + green text
   Pending: orange dot + orange text
   Urgent: red dot + red text
   Confirmed: teal dot + teal text
-  Declined: pink dot + muted text
+  Declined: muted dot + muted text
 ```
 
 #### CountdownTimer
 ```
 ┌────────────────────────────┐
-│  ⏱ 3 days 14:22:08       │
+│  [Clock Icon] 3d 14:22:08  │
 │  Transfusion Urgency       │
 └────────────────────────────┘
 Font: mono, Size: 1.5rem
 Color changes: >7 days green, 3-7 days orange, <3 days red
-Pulse animation when <3 days
-Background: bg-card with colored left border (4px)
+Pulse animation when <3 days (border opacity 0.3 → 0.6)
+Background: bg-card with top border (4px, colored by urgency)
 ```
 
 #### ProgressBar
@@ -173,8 +181,9 @@ Background: bg-card with colored left border (4px)
 │  3 of 5 donors confirmed        │
 └──────────────────────────────────┘
 Track: bg-surface, height 8px, border-radius 4px
-Fill: gradient from --red to --teal
+Fill: solid --teal (no gradient)
 Label below: text-secondary, 0.875rem
+Transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1)
 ```
 
 ---
@@ -187,27 +196,30 @@ Label below: text-secondary, 0.875rem
 ```
 ┌──────────────────────────────────────────────────────────┐
 │                                                           │
-│           [Heart Icon]  PRAAN AI  ×  Blood Warriors      │
+│  PRAAN AI                                                 │
+│  [Blood Warriors]                                         │
 │                                                           │
-│    AI-Powered Blood Coordination                          │
-│    for Thalassemia Fighters                               │
+│  AI-Powered Blood Coordination                            │
+│  for Thalassemia Fighters                                 │
 │                                                           │
-│    [See the Demo →]  [Learn More]                         │
+│  [See the Demo]  [Learn More]                             │
 │                                                           │
-│    ┌──────────────────────────────────────────────────┐   │
-│    │ 5,596 Donors │ 4,366 Collections │ 2M+ Reach    │   │
-│    └──────────────────────────────────────────────────┘   │
+│  ┌──────────────────────────────────────────────────┐    │
+│  │ 5,596 Donors │ 4,366 Collections │ 2M+ Reach    │    │
+│  └──────────────────────────────────────────────────┘    │
 │                                                           │
 └──────────────────────────────────────────────────────────┘
-Background: gradient from bg-primary to dark red
-Title: 3.5rem, gradient text (red to orange)
-Subtitle: 1.25rem, text-secondary
+Background: bg-primary (solid, no gradient)
+Title: 3.5rem, tracking-tighter, text-primary (no gradient text)
+Subtitle: 1.25rem, text-secondary, max-w-[65ch]
+Layout: Left-aligned text, right side empty or subtle pattern
 Buttons: Primary + Ghost, side by side
-Stats bar: 3 StatCards in a row
+Stats bar: 3 StatCards in horizontal scroll on mobile, row on desktop
 ```
 
 ##### DifferentiatorCard
 ```
+Desktop (2-column zig-zag):
 ┌────────────────────────────┐
 │  [Icon]                     │
 │                             │
@@ -221,13 +233,28 @@ Stats bar: 3 StatCards in a row
 │                             │
 │  AWS: DynamoDB + Lambda     │
 └────────────────────────────┘
-3 cards in a grid row
-Each card: bg-card, hover scale(1.02)
-Icon: 48px, colored circle bg
-Title: 1.25rem, 700 weight
-Description: text-secondary, 2-3 lines
-CTA: text-link style (--blue)
-AWS badge: small purple pill at bottom
+┌────────────────────────────┐
+│         [Icon]              │
+│                             │
+│      Urgency Window         │
+│                             │
+│   Calculate exactly how     │
+│   many days patient can     │
+│   wait for transfusion.     │
+│                             │
+│         [Try Demo →]        │
+│                             │
+│   AWS: Textract + Lambda    │
+└────────────────────────────┘
+
+Mobile: Single column stack
+
+Each card: bg-card, hover scale(1.01) + shadow-hover
+Icon: 48px, colored circle bg (10% opacity)
+Title: 1.5rem, 700 weight
+Description: text-secondary, max-w-[55ch]
+CTA: text-link style (--blue), no underline, hover underline
+AWS badge: small pill at bottom (bg-surface, text-muted)
 ```
 
 ---
@@ -239,35 +266,47 @@ AWS badge: small purple pill at bottom
 ┌──────────────────────────────────────────┐
 │  Patient Registration                     │
 │                                           │
-│  Name: [________________________]         │
-│  Age: [________] Blood Group: [O+ ▼]     │
-│  Location: [____________________]         │
-│  Last Transfusion: [____/____/____]       │
-│  Cycle Length: [____] days                │
+│  Name                                     │
+│  [________________________]               │
 │                                           │
-│  Medical Report: [Upload PDF/Image]       │
+│  Age          Blood Group                 │
+│  [________]   [O+ ▼]                      │
+│                                           │
+│  Location                                 │
+│  [____________________]                   │
+│                                           │
+│  Last Transfusion                         │
+│  [____/____/____]                         │
+│                                           │
+│  Cycle Length (days)                      │
+│  [____]                                   │
+│                                           │
+│  Medical Report                           │
 │  ┌────────────────────────────────────┐   │
-│  │ 📄 Drag & drop or click to upload │   │
+│  │ [Upload Icon]                      │   │
+│  │ Drag & drop or click to upload    │   │
 │  └────────────────────────────────────┘   │
 │                                           │
 │  [Register Patient →]                     │
 └──────────────────────────────────────────┘
 Layout: 2-column grid on desktop, single column on mobile
-Inputs: bg-surface, border, focus border-focus
+Inputs: bg-surface, border, focus border-focus + ring-2 ring-focus/20
+Labels: Above inputs, text-secondary, 0.875rem, font-weight 500
 Blood group: dropdown with colored options
 Upload: dashed border, bg-surface, hover highlight
 Submit: Primary button, full width
+Error states: Red border + error text below input
 ```
 
 ##### UrgencyWindow
 ```
 ┌──────────────────────────────────────────────────────┐
-│  ⚡ Transfusion Urgency Window                        │
+│  [Lightning Icon] Transfusion Urgency Window         │
 │                                                       │
 │  ┌─────────────────────────────────────────────────┐ │
 │  │  Patient: Kavya, 8 yrs, O+                      │ │
 │  │                                                   │ │
-│  │  ⏱ 3 DAYS 14:22:08  remaining                   │ │
+│  │  3 DAYS 14:22:08  remaining                     │ │
 │  │  ████████████░░░░░░░░░░░░░░  25%                 │ │
 │  │                                                   │ │
 │  │  Medical Report Values:                           │ │
@@ -283,9 +322,9 @@ Submit: Primary button, full width
 │                                                       │
 │  [Start Donor Search →]  [View Blood Banks →]         │
 └──────────────────────────────────────────────────────┘
-Background: bg-card with red left border (4px) when urgent
+Background: bg-card with top border (4px, red when urgent)
 Countdown: mono font, large (2rem), red when <3 days
-Medical values: 3 mini-cards, red arrow down for low values
+Medical values: 3 mini-cards in row, red arrow down for low values
 Priority: badge component (red/orange/green)
 ```
 
@@ -317,21 +356,22 @@ Search: input with icon, filters blood_group + district
 ##### BloodBankCard (Mobile/Detail view)
 ```
 ┌────────────────────────────┐
-│  🏥 Apollo Blood Bank      │
-│  📍 Hyderabad, Telangana   │
+│  [Hospital Icon] Apollo    │
+│  [Pin Icon] Hyderabad      │
 │                             │
 │  ┌────┐ ┌────┐ ┌────┐     │
 │  │ O+ │ │ A+ │ │ B+ │     │
 │  │  5 │ │  3 │ │  2 │     │
 │  └────┘ └────┘ └────┘     │
 │                             │
-│  ⚠️ B+ expires in 5 days   │
+│  [Warning Icon] B+ expires │
+│  in 5 days                  │
 │                             │
 │  [Reserve O+] [View All]   │
 └────────────────────────────┘
 Card: bg-card, 16px radius
 Blood group badges: colored pills with unit count
-Expiry alert: orange background, warning icon
+Expiry alert: orange background (10% opacity), warning icon
 ```
 
 ---
@@ -341,7 +381,8 @@ Expiry alert: orange background, warning icon
 ##### CallGrid (20 calls view)
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  📞 Voice Call Campaign — Patient: Kavya (O+, 3 days)    │
+│  [Phone Icon] Voice Call Campaign                        │
+│  Patient: Kavya (O+, 3 days)                             │
 │                                                           │
 │  Status: 3/20 Confirmed — 2 more needed                  │
 │  ████████████░░░░░░░░░░░░░░░░░░░░  60%                  │
@@ -352,25 +393,24 @@ Expiry alert: orange background, warning icon
 │  │Ravi  │ │Suresh│ │Priya │ │Amit  │ │Deepa │          │
 │  │O+    │ │O+    │ │O+    │ │O+    │ │O+    │          │
 │  │2.1km │ │3.4km │ │5.2km │ │6.1km │ │7.3km │          │
-│  │ ✅   │ │ ✅   │ │ 📞   │ │ ✅   │ │ ❌   │          │
+│  │ CONF │ │ CONF │ │CALL  │ │ CONF │ │DECL  │          │
 │  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘          │
 │  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐          │
 │  │Kiran │ │Laksh │ │Manoj │ │Neha  │ │Omar  │          │
 │  │O+    │ │O+    │ │O+    │ │O+    │ │O+    │          │
 │  │8.0km │ │9.1km │ │10km  │ │11km  │ │12km  │          │
-│  │ 🔄   │ │ 🔄   │ │ ⏳   │ │ ⏳   │ │ ⏳   │          │
+│  │PEND  │ │PEND  │ │WAIT  │ │WAIT  │ │WAIT  │          │
 │  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘          │
-│  (Row 3 and Row 4 similar...)                            │
 └──────────────────────────────────────────────────────────┘
-Grid: 5 columns × 4 rows
+Grid: 5 columns × 4 rows (responsive: 3 cols tablet, 2 cols mobile)
 Each CallCard: 140px wide, bg-card
-Status indicators:
-  ⏳ Pending (gray)
-  🔄 Calling (blue, pulse animation)
-  ✅ Confirmed (teal, glow)
-  ❌ Declined (pink)
-  📞 Connected/In Progress (green, pulse)
-  ⚡ No Answer (orange)
+Status indicators (text labels, not emojis):
+  PENDING (muted)
+  CALLING (blue, pulse border)
+  CONFIRMED (teal)
+  DECLINED (pink)
+  CONNECTED (green, pulse border)
+  NO ANSWER (orange)
 ```
 
 ##### CallCard (Individual)
@@ -380,20 +420,19 @@ Status indicators:
 │ O+    2.1km  │
 │ Score: 0.92  │
 │              │
-│    ✅        │
 │  CONFIRMED   │
 │              │
 │ 12:04:32 PM  │
 └──────────────┘
 Width: 140px, Height: 180px
-Background: bg-card, border colored by status
+Background: bg-card, border colored by status (2px)
 Name: 0.875rem, 600 weight
 Blood group: colored badge
-Distance: text-muted
-Score: text-secondary
-Status: large icon + label, centered
-Timestamp: text-muted, 0.75rem
-Animations: confirmed → teal glow, declined → fade out
+Distance: text-muted, font-mono
+Score: text-secondary, font-mono
+Status: large text label, centered, colored
+Timestamp: text-muted, 0.75rem, font-mono
+Animations: confirmed → border pulse teal, declined → opacity 0.6
 ```
 
 ---
@@ -422,7 +461,7 @@ Animations: confirmed → teal glow, declined → fade out
 └──────────────────────────────────────────────────────────┘
 Timeline: vertical line (2px, --border) with nodes
 Completed: green filled circle, teal line
-Active: blue pulsing circle
+Active: blue pulsing circle (scale 1 → 1.1, infinite)
 Pending: gray empty circle
 Each step: card with details, timestamp right-aligned
 ```
@@ -432,25 +471,25 @@ Each step: card with details, timestamp right-aligned
 ┌──────────────────────────────────────────────────────────┐
 │  Top Donors for O+ in Hyderabad                           │
 │                                                           │
-│  #1 Ravi Kumar    O+  Score: 0.92  2.1km  ✅ Confirmed   │
-│  #2 Suresh M      O+  Score: 0.88  3.4km  ✅ Confirmed   │
-│  #3 Priya S       O+  Score: 0.85  5.2km  📞 Calling     │
-│  #4 Amit R        O+  Score: 0.82  6.1km  ✅ Confirmed   │
-│  #5 Deepa V       O+  Score: 0.79  7.3km  ❌ Declined    │
+│  #1 Ravi Kumar    O+  Score: 0.92  2.1km  CONFIRMED      │
+│  #2 Suresh M      O+  Score: 0.88  3.4km  CONFIRMED      │
+│  #3 Priya S       O+  Score: 0.85  5.2km  CALLING        │
+│  #4 Amit R        O+  Score: 0.82  6.1km  CONFIRMED      │
+│  #5 Deepa V       O+  Score: 0.79  7.3km  DECLINED       │
 │  ...                                                      │
 │                                                           │
 │  Readiness Score = Eligibility × Reliability × Proximity  │
 └──────────────────────────────────────────────────────────┘
 List: bg-card rows, hover highlight
 Rank: mono font, colored (#1 gold, #2 silver, #3 bronze)
-Score: progress bar, 0-1 scale
+Score: progress bar, 0-1 scale, font-mono
 Status: badge component
 ```
 
 ##### FailureInsights
 ```
 ┌──────────────────────────────────────────────────────────┐
-│  🧠 Self-Learning Insights                                │
+│  [Brain Icon] Self-Learning Insights                     │
 │                                                           │
 │  ┌─────────────────────────────────────────────────────┐ │
 │  │ Pattern: O+ requests in Hyderabad fail 40% in       │ │
@@ -468,10 +507,10 @@ Status: badge component
 │  │ Expanded search radius from 10km to 25km for B-.   │ │
 │  └─────────────────────────────────────────────────────┘ │
 └──────────────────────────────────────────────────────────┘
-Background: bg-card with purple left border (AI/intelligence color)
+Background: bg-card (no side-stripe border)
 Each insight: mini-card, bg-surface
-Pattern icon: 🧠 (brain) or ⚡ (lightning)
-Improvement metrics: green text
+Pattern icon: [Brain Icon] from Phosphor/Radix (no emoji)
+Improvement metrics: green text, font-mono
 ```
 
 ---
@@ -481,8 +520,8 @@ Improvement metrics: green text
 ### Landing Page (`/`)
 ```
 [Navbar]
-[HeroSection — full viewport height]
-[DifferentiatorCards — 3 columns grid]
+[HeroSection — full viewport height, left-aligned]
+[DifferentiatorCards — 2-column zig-zag on desktop, stack on mobile]
 [StatsBar — 4 StatCards in row]
 [HowItWorks — 5 step visual flow]
 [TechStack — AWS services grid]
@@ -542,7 +581,7 @@ Improvement metrics: green text
 
 | Breakpoint | Width | Layout Changes |
 |-----------|-------|----------------|
-| Mobile | < 640px | Single column, stacked cards, hamburger nav |
+| Mobile | < 640px | Single column, stacked cards, hamburger nav, min-h-[100dvh] |
 | Tablet | 640-1024px | 2 columns, scrollable tables |
 | Desktop | 1024-1440px | Full layout, 3 columns |
 | Wide | > 1440px | Max-width 1280px, centered |
@@ -551,13 +590,143 @@ Improvement metrics: green text
 
 ## Animation Patterns
 
-| Component | Animation | Duration |
-|-----------|----------|----------|
-| Card hover | scale(1.02) + shadow increase | 0.2s ease |
-| CallCard status change | color transition + glow | 0.3s ease |
-| CountdownTimer (< 3 days) | pulse border red | 1s infinite |
-| ProgressBar fill | width transition | 0.5s ease |
-| WorkflowTimeline step | slide in from left | 0.3s ease |
-| Page transition | fade in | 0.2s ease |
-| Button click | scale(0.98) | 0.1s ease |
-| CallCard calling status | border pulse blue | 1.5s infinite |
+| Component | Animation | Duration | Easing |
+|-----------|----------|----------|--------|
+| Card hover | translate-y-[-1px] + shadow increase | 0.3s | cubic-bezier(0.16, 1, 0.3, 1) |
+| CallCard status change | border color transition | 0.3s | cubic-bezier(0.16, 1, 0.3, 1) |
+| CountdownTimer (< 3 days) | pulse border opacity | 1.5s | ease-in-out infinite |
+| ProgressBar fill | width transition | 0.5s | cubic-bezier(0.16, 1, 0.3, 1) |
+| WorkflowTimeline step | slide in from left | 0.3s | cubic-bezier(0.16, 1, 0.3, 1) |
+| Page transition | fade in | 0.2s | ease-out |
+| Button click | scale-[0.98] | 0.1s | ease-out |
+| CallCard calling status | border pulse blue | 1.5s | ease-in-out infinite |
+| List stagger | opacity + translate-y | 0.3s | cubic-bezier(0.16, 1, 0.3, 1) + delay |
+
+---
+
+## Icon System
+
+Use Phosphor Icons or Radix Icons (no emojis):
+
+```
+Heart — PRAAN AI logo
+Hospital — Blood bank
+Phone — Voice calls
+Clock — Urgency/timing
+Lightning — Priority/urgent
+Warning — Expiry/alerts
+Brain — AI/intelligence
+Upload — File upload
+Search — Search
+Filter — Filters
+Pin — Location
+Check — Confirmed
+X — Declined/error
+Arrow Right — CTA/navigation
+```
+
+All icons: 1.5px stroke width, consistent across app.
+
+---
+
+## Accessibility
+
+- **Contrast**: All text meets WCAG AA (4.5:1 for normal text, 3:1 for large text)
+- **Focus states**: Visible ring-2 ring-focus/20 on all interactive elements
+- **Reduced motion**: Respect `prefers-reduced-motion` (disable animations)
+- **Color blindness**: Don't rely on color alone (use icons + text labels)
+- **Keyboard navigation**: All interactive elements reachable via Tab
+- **Screen readers**: Proper ARIA labels, semantic HTML
+
+---
+
+## Performance
+
+- **Hardware acceleration**: Animate only `transform` and `opacity`
+- **Lazy loading**: Images and heavy components use `loading="lazy"`
+- **Code splitting**: Route-based code splitting
+- **Font loading**: `font-display: swap` for web fonts
+- **Image optimization**: WebP format, responsive srcset
+
+---
+
+## Design Tokens Export
+
+```json
+{
+  "color": {
+    "red": "oklch(0.65 0.18 25)",
+    "orange": "oklch(0.72 0.15 55)",
+    "blue": "oklch(0.68 0.14 240)",
+    "teal": "oklch(0.78 0.12 175)",
+    "pink": "oklch(0.62 0.19 10)",
+    "green": "oklch(0.68 0.16 145)"
+  },
+  "background": {
+    "primary": "oklch(0.15 0.008 25)",
+    "card": "oklch(0.20 0.008 25)",
+    "surface": "oklch(0.17 0.008 25)"
+  },
+  "text": {
+    "primary": "oklch(0.98 0.005 25)",
+    "secondary": "oklch(0.72 0.008 25)",
+    "muted": "oklch(0.52 0.008 25)"
+  },
+  "border": {
+    "default": "oklch(0.28 0.008 25)",
+    "focus": "oklch(0.68 0.14 240)"
+  },
+  "spacing": {
+    "base": "4px",
+    "card": "24px",
+    "section": "48px",
+    "grid": "16px",
+    "component": "8px"
+  },
+  "radius": {
+    "card": "16px",
+    "button": "10px",
+    "input": "8px",
+    "badge": "6px"
+  },
+  "typography": {
+    "display": {
+      "family": "Satoshi",
+      "size": "3.5rem",
+      "weight": 700,
+      "tracking": "-0.05em"
+    },
+    "h1": {
+      "family": "Satoshi",
+      "size": "2.5rem",
+      "weight": 700,
+      "tracking": "-0.025em"
+    },
+    "body": {
+      "family": "Spectral",
+      "size": "1rem",
+      "weight": 400,
+      "lineHeight": 1.6,
+      "maxWidth": "65ch"
+    },
+    "mono": {
+      "family": "JetBrains Mono",
+      "size": "1rem",
+      "weight": 400
+    }
+  },
+  "shadow": {
+    "card": "0 4px 24px -8px oklch(0.15 0.008 25 / 0.4)",
+    "hover": "0 8px 32px -8px oklch(0.15 0.008 25 / 0.5)",
+    "subtle": "0 2px 8px -2px oklch(0.15 0.008 25 / 0.3)"
+  },
+  "animation": {
+    "ease": "cubic-bezier(0.16, 1, 0.3, 1)",
+    "duration": {
+      "fast": "0.1s",
+      "normal": "0.3s",
+      "slow": "0.5s"
+    }
+  }
+}
+```
