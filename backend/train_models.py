@@ -48,13 +48,23 @@ def main():
 
             # Test the trained models
             logger.info("\nTesting with sample data...")
-            from engine.severity import ml_severity, rule_severity
+            from engine.severity import ml_severity, rule_severity, predict_transfusion_date
 
             test_params = {
-                'hb_level': 7.5,
-                'mcv_level': 65.0,
-                'mch_level': 20.0,
-                'ferritin_level': 800.0,
+                'hb_level':       7.5,    # maps to hb_current_g_dl in CSV
+                'mcv_level':      65.0,   # maps to mcv_fL in CSV
+                'mch_level':      20.0,   # maps to mch_pg in CSV
+                'ferritin_level': 800.0,  # maps to ferritin_ng_ml in CSV
+                'hb_a2':          4.5,    # maps to hb_A2_pct in CSV
+                'hb_f':           35.0,   # maps to hb_F_pct in CSV
+                'rbc_count':      3.5,    # maps to rbc_M_ul in CSV
+                'age':            28,
+                # Transfusion parameters
+                'hb_post_transfusion':           9.8,
+                'hb_drop_rate_per_day':          0.05,
+                'days_since_last_transfusion':   20,
+                'units_per_session':             3.0,
+                'avg_transfusion_interval_days': 45.0,
             }
 
             rule_result = rule_severity(test_params)
@@ -64,6 +74,8 @@ def main():
             logger.info(f"ML severity: {ml_result['severity']} (confidence: {ml_result['confidence']:.3f})")
             logger.info(f"Probabilities: {ml_result['probabilities']}")
 
+            days = predict_transfusion_date(test_params)
+            logger.info(f"Predicted days until next transfusion: {days}")
             logger.info("=" * 60)
             logger.info("✓ Training complete! Models saved to backend/engine/models/")
             logger.info("=" * 60)
