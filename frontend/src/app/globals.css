@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0F1117;
+  --bg-card: #1A1D27;
+  --bg-card-hover: #242836;
+  --bg-surface: #141720;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A3B1;
+  --text-muted: #6B6E7B;
+  --border-color: #2A2D3A;
+  --border-focus: #41A7F1;
+  --red: #FD6666;
+  --orange: #FCAA49;
+  --blue: #41A7F1;
+  --teal: #64FFE3;
+  --pink: #FF5678;
+  --purple: #AE41F1;
+  --green: #29D64F;
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-card: var(--bg-card);
+  --color-card-hover: var(--bg-card-hover);
+  --color-surface: var(--bg-surface);
+  --color-muted: var(--text-muted);
+  --color-secondary: var(--text-secondary);
+  --color-border: var(--border-color);
+  --color-blood: var(--red);
+  --color-warning: var(--orange);
+  --color-info: var(--blue);
+  --color-success: var(--teal);
+  --color-highlight: var(--pink);
+  --color-ai: var(--purple);
+  --color-positive: var(--green);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(253, 102, 102, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(253, 102, 102, 0.8); }
+}
+
+@keyframes pulse-blue {
+  0%, 100% { box-shadow: 0 0 8px rgba(65, 167, 241, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(65, 167, 241, 0.8); }
+}
+
+@keyframes pulse-teal {
+  0%, 100% { box-shadow: 0 0 8px rgba(100, 255, 227, 0.4); }
+  50% { box-shadow: 0 0 20px rgba(100, 255, 227, 0.8); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+.animate-pulse-blue {
+  animation: pulse-blue 1.5s ease-in-out infinite;
+}
+
+.animate-pulse-teal {
+  animation: pulse-teal 1.5s ease-in-out infinite;
+}
