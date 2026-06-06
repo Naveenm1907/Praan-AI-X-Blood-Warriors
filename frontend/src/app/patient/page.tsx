@@ -75,7 +75,6 @@ export default function PatientPage() {
     const urgency = calculateUrgency(
       form.last_transfusion_date, parseInt(form.cycle_length_days) || 21, ocrResult.hb
     );
-  }
     const patient: Patient = {
       patient_id: `p${Date.now()}`,
       name: form.name,
