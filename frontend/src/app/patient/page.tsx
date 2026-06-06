@@ -1,348 +1,452 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import type { BloodGroup, Patient } from "@/lib/types";
-import { BLOOD_GROUPS, BLOOD_GROUP_COLORS } from "@/lib/types";
+import { api } from "@/lib/api";
 
-interface OCRResult {
-  hb: number;
-  mcv: number;
-  ferritin: number;
-  mch: number;
+interface Patient {
+  id: string;
+  name: string;
+  age: number;
+  blood_group: string;
+  location: string;
+  last_transfusion_date: string | null;
+  created_at: string;
+}
+
+interface ReportResult {
+  patient_id: string;
+  severity: string;
+  severity_score: number;
+  transfusion_date: string;
+  days_until_transfusion: number;
+  urgency_level: string;
+  extracted_values: Record<string, number>;
+  recommendation: string;
 }
 
 export default function PatientPage() {
-  const [patients, setPatients] = useState<Patient[]>([
-    {
-      patient_id: "p001", name: "Kavya Reddy", age: 8, blood_group: "O+",
-      location: "Hyderabad", latitude: 17.385, longitude: 78.4867,
-      last_transfusion_date: "2026-05-18", cycle_length_days: 21,
-      hb_level: 6.8, ferritin_level: 12, mcv_level: 62,
-      urgency_window_days: 3, created_at: "2026-06-01",
-    },
-    {
-      patient_id: "p002", name: "Rahul Kumar", age: 12, blood_group: "B+",
-      location: "Warangal", latitude: 17.9689, longitude: 79.5941,
-      last_transfusion_date: "2026-05-10", cycle_length_days: 28,
-      hb_level: 9.2, ferritin_level: 45, mcv_level: 78,
-      urgency_window_days: 12, created_at: "2026-05-28",
-    },
-    {
-      patient_id: "p003", name: "Arjun S", age: 10, blood_group: "O-",
-      location: "Secunderabad", latitude: 17.4399, longitude: 78.4983,
-      last_transfusion_date: "2026-05-28", cycle_length_days: 14,
-      hb_level: 5.9, ferritin_level: 8, mcv_level: 55,
-      urgency_window_days: 2, created_at: "2026-06-03",
-    },
-  ]);
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [reportResult, setReportResult] = useState<ReportResult | null>(null);
+  const [processingReport, setProcessingReport] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "", age: "", blood_group: "O+" as BloodGroup,
-    location: "", last_transfusion_date: "", cycle_length_days: "",
-  });
-  const [ocrResult, setOcrResult] = useState<OCRResult | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [newPatient, setNewPatient] = useState<Patient | null>(null);
+  // Form state
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [bloodGroup, setBloodGroup] = useState("");
+  const [location, setLocation] = useState("");
+  const [lastTransfusion, setLastTransfusion] = useState("");
+  const [file, setFile] = useState<File | null>(null);
 
-  const handleUpload = useCallback(() => {
-    setUploading(true);
-    setTimeout(() => {
-      setOcrResult({
-        hb: parseFloat((5 + Math.random() * 5).toFixed(1)),
-        mcv: Math.floor(55 + Math.random() * 30),
-        ferritin: Math.floor(5 + Math.random() * 50),
-        mch: parseFloat((18 + Math.random() * 12).toFixed(1)),
+  useEffect(() => {
+    fetchPatients();
+  }, []);
+
+  async function fetchPatients() {
+    try {
+      const data = await api.get<Patient[]>("/api/patient/patients");
+      setPatients(data);
+    } catch (error) {
+      console.error("Failed to fetch patients:", error);
+    }
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      // Step 1: Register patient
+      const patient = await api.post<Patient>("/api/patient/patients", {
+        name,
+        age: parseInt(age),
+        gender: "Not Specified",
+        blood_group: bloodGroup,
+        phone: "0000000000",
+        location,
+        last_transfusion_date: lastTransfusion || null,
       });
-      setUploading(false);
-    }, 2000);
-  }, []);
 
-  const calculateUrgency = useCallback((
-    lastDate: string, cycleDays: number, hb: number
-  ): number => {
-    const last = new Date(lastDate);
-    const next = new Date(last.getTime() + cycleDays * 24 * 60 * 60 * 1000);
-    const today = new Date("2026-06-06");
-    let days = Math.ceil((next.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-    if (hb < 7) days = Math.max(days - 3, 1);
-    if (hb < 5) days = 1;
-    return Math.max(days, 1);
-  }, []);
+      setSelectedPatient(patient);
+      setPatients((prev) => [...prev, patient]);
 
-  const handleSubmit = () => {
-    if (!form.name || !form.age || !form.last_transfusion_date || !ocrResult) return;
-    const urgency = calculateUrgency(
-      form.last_transfusion_date, parseInt(form.cycle_length_days) || 21, ocrResult.hb
-    );
-    const patient: Patient = {
-      patient_id: `p${Date.now()}`,
-      name: form.name,
-      age: parseInt(form.age),
-      blood_group: form.blood_group,
-      location: form.location || "Hyderabad",
-      latitude: 17.385,
-      longitude: 78.4867,
-      last_transfusion_date: form.last_transfusion_date,
-      cycle_length_days: parseInt(form.cycle_length_days) || 21,
-      hb_level: ocrResult.hb,
-      ferritin_level: ocrResult.ferritin,
-      mcv_level: ocrResult.mcv,
-      urgency_window_days: urgency,
-      created_at: "2026-06-06",
+      // Step 2: Upload and process medical report
+      if (file) {
+        setProcessingReport(true);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("use_mock_ocr", "true");
+
+        const result = await api.upload<ReportResult>(
+          `/api/patient/patients/${patient.id}/medical-report`,
+          formData
+        );
+
+        setReportResult(result);
+        setProcessingReport(false);
+      }
+
+      // Reset form
+      setName("");
+      setAge("");
+      setBloodGroup("");
+      setLocation("");
+      setLastTransfusion("");
+      setFile(null);
+    } catch (error) {
+      console.error("Failed to register patient:", error);
+      alert("Failed to register patient. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function getUrgencyColor(urgency: string): string {
+    const colors: Record<string, string> = {
+      critical: "#dc2626",
+      urgent: "#ea580c",
+      soon: "#ca8a04",
+      scheduled: "#16a34a",
+      not_needed: "#6b7280",
     };
-    setNewPatient(patient);
-    setPatients((prev) => [...prev, patient]);
-  };
+    return colors[urgency] || "#6b7280";
+  }
 
-  const getUrgencyColor = (days: number) => {
-    if (days <= 3) return "var(--blood)";
-    if (days <= 7) return "var(--orange)";
-    return "var(--green)";
-  };
-
-  const getUrgencyLabel = (days: number) => {
-    if (days <= 3) return "URGENT";
-    if (days <= 7) return "MODERATE";
-    return "SCHEDULED";
-  };
+  function getSeverityColor(severity: string): string {
+    const colors: Record<string, string> = {
+      "Severe": "#dc2626",
+      "Moderate-Severe": "#ea580c",
+      "Moderate": "#ca8a04",
+      "Mild": "#16a34a",
+      "No Thalassemia": "#6b7280",
+    };
+    return colors[severity] || "#6b7280";
+  }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-8">
-      <h1 className="mb-2 text-3xl font-bold">Patient Onboarding</h1>
-      <p className="mb-8 text-[var(--text-secondary)]">
-        Register patient, upload medical report, and calculate transfusion urgency window.
-      </p>
+    <div className="min-h-screen bg-[var(--bg-primary)] py-12 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-5xl font-bold text-[var(--text-primary)] mb-4">
+            Patient Registration
+          </h1>
+          <p className="text-xl text-[var(--text-secondary)]">
+            Register patients and analyze medical reports with AI-powered severity classification
+          </p>
+        </div>
 
-      <div className="grid gap-8 lg:grid-cols-2">
-        {/* Form */}
-        <div className="rounded-2xl border border-border bg-card p-8">
-          <h2 className="mb-6 text-xl font-bold">Patient Registration</h2>
+        <div className="grid lg:grid-cols-2 gap-8">
+          {/* Registration Form */}
+          <div className="bg-[var(--bg-card)] p-8 border border-[var(--border-color)]">
+            <h2 className="text-2xl font-semibold text-[var(--text-primary)] mb-6">
+              Register New Patient
+            </h2>
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Name</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  Patient Name
+                </label>
                 <input
                   type="text"
-                  value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
-                  placeholder="Patient name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] focus:border-[#f14163] focus:outline-none"
+                  placeholder="Enter patient name"
                 />
               </div>
-              <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Age</label>
-                <input
-                  type="number"
-                  value={form.age}
-                  onChange={(e) => setForm({ ...form, age: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
-                  placeholder="Age"
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Blood Group</label>
-                <select
-                  value={form.blood_group}
-                  onChange={(e) => setForm({ ...form, blood_group: e.target.value as BloodGroup })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
-                >
-                  {BLOOD_GROUPS.map((g) => (
-                    <option key={g} value={g}>{g}</option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                    Age
+                  </label>
+                  <input
+                    type="number"
+                    value={age}
+                    onChange={(e) => setAge(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] focus:border-[#f14163] focus:outline-none"
+                    placeholder="Age"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                    Blood Group
+                  </label>
+                  <select
+                    value={bloodGroup}
+                    onChange={(e) => setBloodGroup(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] focus:border-[#f14163] focus:outline-none"
+                  >
+                    <option value="">Select</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                  </select>
+                </div>
               </div>
+
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Location</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  Location
+                </label>
                 <input
                   type="text"
-                  value={form.location}
-                  onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
-                  placeholder="City/District"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  required
+                  className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] focus:border-[#f14163] focus:outline-none"
+                  placeholder="City, State"
                 />
               </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Last Transfusion</label>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  Last Transfusion Date (Optional)
+                </label>
                 <input
                   type="date"
-                  value={form.last_transfusion_date}
-                  onChange={(e) => setForm({ ...form, last_transfusion_date: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
+                  value={lastTransfusion}
+                  onChange={(e) => setLastTransfusion(e.target.value)}
+                  className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] focus:border-[#f14163] focus:outline-none"
                 />
               </div>
-              <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Cycle Length (days)</label>
-                <input
-                  type="number"
-                  value={form.cycle_length_days}
-                  onChange={(e) => setForm({ ...form, cycle_length_days: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
-                  placeholder="21"
-                />
-              </div>
-            </div>
 
-            {/* Medical Report Upload */}
-            <div>
-              <label className="mb-1 block text-sm text-[var(--text-secondary)]">Medical Report</label>
-              <div
-                onClick={handleUpload}
-                className="cursor-pointer rounded-xl border-2 border-dashed border-border bg-surface p-8 text-center transition-all hover:border-blood"
+              <div>
+                <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">
+                  Medical Report Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setFile(e.target.files?.[0] || null)}
+                  className="w-full px-4 py-3 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-primary)] file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-[#f14163] file:text-white file:cursor-pointer"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-4 bg-[#f14163] text-white font-semibold hover:bg-[#e83a5c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                {uploading ? (
+                {loading ? "Registering..." : "Register Patient & Analyze Report"}
+              </button>
+            </form>
+          </div>
+
+          {/* Results Panel */}
+          <div className="space-y-6">
+            {/* Processing Status */}
+            {processingReport && (
+              <div className="bg-[var(--bg-card)] p-8 border border-[var(--border-color)]">
+                <div className="flex items-center gap-4">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#f14163]"></div>
                   <div>
-                    <p className="text-sm text-[var(--ai)]">Textract scanning report...</p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">Extracting Hb, MCV, MCH, Ferritin</p>
-                  </div>
-                ) : ocrResult ? (
-                  <p className="text-sm text-success">Report scanned successfully</p>
-                ) : (
-                  <div>
-                    <p className="text-2xl">&#128196;</p>
-                    <p className="mt-2 text-sm text-[var(--text-secondary)]">
-                      Click to upload PDF/Image (simulated Textract OCR)
+                    <h3 className="text-lg font-semibold text-[var(--text-primary)]">
+                      Processing Medical Report
+                    </h3>
+                    <p className="text-sm text-[var(--text-secondary)]">
+                      Extracting values and analyzing severity...
                     </p>
                   </div>
-                )}
+                </div>
               </div>
-            </div>
+            )}
 
-            <button
-              onClick={handleSubmit}
-              disabled={!form.name || !form.age || !form.last_transfusion_date || !ocrResult}
-              className="w-full rounded-xl bg-blood py-3 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:opacity-40"
-            >
-              Register Patient & Calculate Urgency
-            </button>
-          </div>
-        </div>
+            {/* Report Results */}
+            {reportResult && !processingReport && (
+              <>
+                {/* Severity Classification */}
+                <div className="bg-[var(--bg-card)] p-8 border border-[var(--border-color)]">
+                  <h3 className="text-2xl font-semibold text-[var(--text-primary)] mb-4">
+                    Severity Classification
+                  </h3>
 
-        {/* Right side: OCR Results + Urgency */}
-        <div className="space-y-6">
-          {/* OCR Results */}
-          {ocrResult && (
-            <div className="rounded-2xl border border-border bg-card p-8">
-              <h2 className="mb-4 text-xl font-bold">Medical Report Values</h2>
-              <p className="mb-4 text-xs text-[var(--ai)]">Extracted by AWS Textract OCR</p>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                {[
-                  { label: "Hb", value: `${ocrResult.hb} g/dL`, low: ocrResult.hb < 10 },
-                  { label: "MCV", value: `${ocrResult.mcv} fL`, low: ocrResult.mcv < 80 },
-                  { label: "Ferritin", value: `${ocrResult.ferritin} ng/mL`, low: ocrResult.ferritin < 30 },
-                  { label: "MCH", value: `${ocrResult.mch} pg`, low: ocrResult.mch < 27 },
-                ].map((item) => (
-                  <div
-                    key={item.label}
-                    className={`rounded-xl border p-4 text-center ${
-                      item.low ? "border-blood/30 bg-blood/5" : "border-border bg-surface"
-                    }`}
-                  >
-                    <p className="text-xs text-[var(--text-muted)]">{item.label}</p>
-                    <p className="mt-1 text-xl font-bold">{item.value}</p>
-                    {item.low && (
-                      <span className="text-xs text-blood">Low</span>
-                    )}
+                  <div className="flex items-center gap-4 mb-6">
+                    <div
+                      className="px-6 py-3 text-white font-bold text-lg"
+                      style={{ backgroundColor: getSeverityColor(reportResult.severity) }}
+                    >
+                      {reportResult.severity}
+                    </div>
+                    <div className="text-[var(--text-secondary)]">
+                      Score: <span className="font-mono font-bold">{reportResult.severity_score}</span>
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
 
-          {/* Urgency Window */}
-          {newPatient && newPatient.urgency_window_days && (
-            <div
-              className="rounded-2xl border-l-4 bg-card p-8"
-              style={{ borderColor: getUrgencyColor(newPatient.urgency_window_days) }}
-            >
-              <h2 className="mb-2 text-xl font-bold">Transfusion Urgency Window</h2>
-              <div className="mt-4 text-center">
-                <p className="font-mono text-4xl font-bold" style={{ color: getUrgencyColor(newPatient.urgency_window_days) }}>
-                  {newPatient.urgency_window_days} DAYS
-                </p>
-                <p className="mt-2 text-sm text-[var(--text-secondary)]">
-                  until next transfusion needed
-                </p>
-              </div>
-              <div className="mt-6 flex items-center justify-center">
-                <span
-                  className="rounded-full px-4 py-1 text-sm font-bold"
-                  style={{
-                    background: `${getUrgencyColor(newPatient.urgency_window_days)}20`,
-                    color: getUrgencyColor(newPatient.urgency_window_days),
-                  }}
-                >
-                  {getUrgencyLabel(newPatient.urgency_window_days)} — Donor search starts NOW
-                </span>
-              </div>
-              <div className="mt-6 flex gap-3">
-                <a
-                  href="/blood-bank"
-                  className="flex-1 rounded-xl border border-border bg-surface py-3 text-center text-sm font-semibold text-[var(--text-secondary)] hover:bg-card-hover"
-                >
-                  Check Blood Banks
-                </a>
-                <a
-                  href="/donor-outreach"
-                  className="flex-1 rounded-xl bg-blood py-3 text-center text-sm font-semibold text-white hover:brightness-110"
-                >
-                  Start Voice Calls
-                </a>
-              </div>
-            </div>
-          )}
+                  <p className="text-[var(--text-secondary)] mb-4">
+                    {reportResult.recommendation}
+                  </p>
+                </div>
 
-          {/* Existing Patients */}
-          <div className="rounded-2xl border border-border bg-card p-8">
-            <h2 className="mb-4 text-xl font-bold">Active Patients</h2>
-            <div className="space-y-3">
-              {patients
-                .sort((a, b) => (a.urgency_window_days || 99) - (b.urgency_window_days || 99))
-                .map((p) => (
-                  <div
-                    key={p.patient_id}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface p-4"
-                  >
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="rounded-lg px-2 py-1 text-xs font-bold"
-                        style={{
-                          background: `${BLOOD_GROUP_COLORS[p.blood_group]}20`,
-                          color: BLOOD_GROUP_COLORS[p.blood_group],
-                        }}
+                {/* Transfusion Estimation */}
+                <div className="bg-[var(--bg-card)] p-8 border border-[var(--border-color)]">
+                  <h3 className="text-2xl font-semibold text-[var(--text-primary)] mb-4">
+                    Transfusion Schedule
+                  </h3>
+
+                  <div className="grid grid-cols-2 gap-6 mb-6">
+                    <div>
+                      <div className="text-sm text-[var(--text-secondary)] mb-2">
+                        Days Until Transfusion
+                      </div>
+                      <div
+                        className="text-4xl font-bold font-mono"
+                        style={{ color: getUrgencyColor(reportResult.urgency_level) }}
                       >
-                        {p.blood_group}
-                      </span>
-                      <div>
-                        <p className="text-sm font-semibold">{p.name}</p>
-                        <p className="text-xs text-[var(--text-muted)]">
-                          Age {p.age} &middot; {p.location}
-                        </p>
+                        {reportResult.days_until_transfusion} days
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p
-                        className="font-mono text-lg font-bold"
-                        style={{ color: getUrgencyColor(p.urgency_window_days || 99) }}
-                      >
-                        {p.urgency_window_days}d
-                      </p>
-                      <p className="text-xs text-[var(--text-muted)]">
-                        {getUrgencyLabel(p.urgency_window_days || 99)}
-                      </p>
+
+                    <div>
+                      <div className="text-sm text-[var(--text-secondary)] mb-2">
+                        Estimated Date
+                      </div>
+                      <div className="text-2xl font-semibold text-[var(--text-primary)]">
+                        {new Date(reportResult.transfusion_date).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </div>
                     </div>
                   </div>
-                ))}
-            </div>
+
+                  <div
+                    className="px-4 py-3 inline-block text-white font-semibold uppercase tracking-wider text-sm"
+                    style={{ backgroundColor: getUrgencyColor(reportResult.urgency_level) }}
+                  >
+                    Urgency: {reportResult.urgency_level}
+                  </div>
+                </div>
+
+                {/* Extracted Values */}
+                {reportResult.extracted_values && (
+                  <div className="bg-[var(--bg-card)] p-8 border border-[var(--border-color)]">
+                    <h3 className="text-2xl font-semibold text-[var(--text-primary)] mb-4">
+                      Extracted Values
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      {Object.entries(reportResult.extracted_values).map(([key, value]) => (
+                        <div key={key} className="bg-[var(--bg-surface)] p-4">
+                          <div className="text-sm text-[var(--text-secondary)] mb-1">
+                            {key.toUpperCase()}
+                          </div>
+                          <div className="text-2xl font-mono font-bold text-[var(--text-primary)]">
+                            {value}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Next Steps */}
+                <div className="bg-[var(--bg-card)] p-8 border border-[var(--border-color)]">
+                  <h3 className="text-2xl font-semibold text-[var(--text-primary)] mb-4">
+                    Next Steps
+                  </h3>
+
+                  <div className="space-y-3">
+                    <Link
+                      href={`/donors?patient_id=${reportResult.patient_id}`}
+                      className="block w-full py-3 bg-[#f14163] text-white text-center font-semibold hover:bg-[#e83a5c] transition-colors"
+                    >
+                      Find Matching Donors
+                    </Link>
+
+                    <Link
+                      href={`/blood-bank?patient_id=${reportResult.patient_id}`}
+                      className="block w-full py-3 border border-[#f14163] text-[#f14163] text-center font-semibold hover:bg-[#f14163] hover:text-white transition-colors"
+                    >
+                      Check Blood Bank Inventory
+                    </Link>
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* No Report Yet */}
+            {!reportResult && !processingReport && (
+              <div className="bg-[var(--bg-card)] p-8 border border-[var(--border-color)] text-center">
+                <div className="text-6xl mb-4">📋</div>
+                <h3 className="text-2xl font-semibold text-[var(--text-primary)] mb-2">
+                  No Report Analyzed Yet
+                </h3>
+                <p className="text-[var(--text-secondary)]">
+                  Register a patient and upload a medical report to see AI-powered analysis
+                </p>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Registered Patients List */}
+        {patients.length > 0 && (
+          <div className="mt-12 bg-[var(--bg-card)] p-8 border border-[var(--border-color)]">
+            <h2 className="text-2xl font-semibold text-[var(--text-primary)] mb-6">
+              Registered Patients ({patients.length})
+            </h2>
+
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-[var(--border-color)]">
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">
+                      Name
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">
+                      Age
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">
+                      Blood Group
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">
+                      Location
+                    </th>
+                    <th className="text-left py-3 px-4 text-sm font-semibold text-[var(--text-secondary)]">
+                      Registered
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {patients.map((patient) => (
+                    <tr
+                      key={patient.id}
+                      className="border-b border-[var(--border-color)] hover:bg-[var(--bg-surface)] transition-colors"
+                    >
+                      <td className="py-3 px-4 text-[var(--text-primary)]">{patient.name}</td>
+                      <td className="py-3 px-4 text-[var(--text-primary)]">{patient.age}</td>
+                      <td className="py-3 px-4">
+                        <span className="px-2 py-1 bg-[#f14163]/20 text-[#f14163] text-sm font-mono">
+                          {patient.blood_group}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-[var(--text-primary)]">{patient.location}</td>
+                      <td className="py-3 px-4 text-sm text-[var(--text-secondary)]">
+                        {new Date(patient.created_at).toLocaleDateString()}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
       </div>
     </div>
-  )};
+  );
+}
