@@ -1,22 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #0F1117;
-  --bg-card: #1A1D27;
-  --bg-card-hover: #242836;
-  --bg-surface: #141720;
-  --text-primary: #FFFFFF;
-  --text-secondary: #A0A3B1;
-  --text-muted: #6B6E7B;
-  --border-color: #2A2D3A;
-  --border-focus: #41A7F1;
-  --red: #FD6666;
-  --orange: #FCAA49;
-  --blue: #41A7F1;
-  --teal: #64FFE3;
-  --pink: #FF5678;
-  --purple: #AE41F1;
-  --green: #29D64F;
+  /* Primary brand: #f14163 — deep rose blood pink */
+  --blood-pink: #f14163;
+
+  /* OKLCH Colors - Light Theme */
+  --bg-primary: #fdfafb;
+  --bg-card: #ffffff;
+  --bg-card-hover: #faf5f6;
+  --bg-surface: #f8f0f2;
+  --text-primary: #2d1a20;
+  --text-secondary: #6b4a52;
+  --text-muted: #9a7a82;
+  --border-color: #eedde1;
+  --border-focus: var(--blood-pink);
+
+  --red: var(--blood-pink);
+  --blood: var(--blood-pink);
+  --orange: #f59e42;
+  --blue: #4190e8;
+  --teal: #1fa58a;
+  --pink: #e84a7a;
+  --purple: #8a4ac4;
+  --green: #2fb86e;
+
+  /* Shadows (rose-tinted) */
+  --shadow-card: 0 1px 3px rgba(241, 65, 99, 0.05), 0 1px 2px rgba(45, 26, 32, 0.04);
+  --shadow-hover: 0 4px 16px rgba(241, 65, 99, 0.12), 0 2px 6px rgba(45, 26, 32, 0.06);
+  --shadow-subtle: 0 1px 2px rgba(241, 65, 99, 0.04);
 }
 
 @theme inline {
@@ -28,45 +39,114 @@
   --color-muted: var(--text-muted);
   --color-secondary: var(--text-secondary);
   --color-border: var(--border-color);
-  --color-blood: var(--red);
+  --color-blood: var(--blood-pink);
   --color-warning: var(--orange);
   --color-info: var(--blue);
   --color-success: var(--teal);
   --color-highlight: var(--pink);
   --color-ai: var(--purple);
   --color-positive: var(--green);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-outfit);
+  --font-body: var(--font-spectral);
+  --font-mono: var(--font-jetbrains);
+  --font-display: var(--font-outfit);
 }
 
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
+  font-family: var(--font-body);
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 8px rgba(253, 102, 102, 0.4); }
-  50% { box-shadow: 0 0 20px rgba(253, 102, 102, 0.8); }
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
 }
 
-@keyframes pulse-blue {
-  0%, 100% { box-shadow: 0 0 8px rgba(65, 167, 241, 0.4); }
-  50% { box-shadow: 0 0 20px rgba(65, 167, 241, 0.8); }
+/* Border pulse animations */
+@keyframes pulse-border-red {
+  0%, 100% { border-color: rgba(241, 65, 99, 0.4); }
+  50% { border-color: rgba(241, 65, 99, 0.85); }
 }
 
-@keyframes pulse-teal {
-  0%, 100% { box-shadow: 0 0 8px rgba(100, 255, 227, 0.4); }
-  50% { box-shadow: 0 0 20px rgba(100, 255, 227, 0.8); }
+@keyframes pulse-border-blue {
+  0%, 100% { border-color: rgba(65, 144, 232, 0.4); }
+  50% { border-color: rgba(65, 144, 232, 0.85); }
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 1.5s ease-in-out infinite;
+@keyframes pulse-border-teal {
+  0%, 100% { border-color: rgba(31, 165, 138, 0.4); }
+  50% { border-color: rgba(31, 165, 138, 0.85); }
 }
 
-.animate-pulse-blue {
-  animation: pulse-blue 1.5s ease-in-out infinite;
+.animate-pulse-border-red {
+  animation: pulse-border-red 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
 }
 
-.animate-pulse-teal {
-  animation: pulse-teal 1.5s ease-in-out infinite;
+.animate-pulse-border-blue {
+  animation: pulse-border-blue 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.animate-pulse-border-teal {
+  animation: pulse-border-teal 1.5s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+/* Staggered list reveal */
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-stagger-in {
+  animation: stagger-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Noise texture overlay */
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Editorial typography */
+h1.editorial {
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+
+h2.editorial {
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+
+/* Dramatic pink accent bar */
+.accent-bar {
+  height: 4px;
+  background: var(--blood-pink);
+  width: 60px;
+}
+
+/* Broken grid element */
+.break-grid {
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+@media (min-width: 768px) {
+  .break-grid {
+    margin-left: -40px;
+    margin-right: -40px;
+  }
 }

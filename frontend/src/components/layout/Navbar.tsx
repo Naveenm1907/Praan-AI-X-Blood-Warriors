@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Heart } from "@phosphor-icons/react";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -18,8 +19,8 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-border bg-[var(--bg-primary)]/95 backdrop-blur-sm">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-2">
-          <span className="text-blood text-xl">&#9829;</span>
-          <span className="text-lg font-bold text-[var(--text-primary)]">
+          <Heart className="text-blood" size={24} weight="fill" />
+          <span className="text-lg font-bold font-display text-[var(--text-primary)]">
             PRAAN AI
           </span>
           <span className="text-[var(--text-muted)] mx-1">&times;</span>
