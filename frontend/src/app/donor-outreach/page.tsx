@@ -3,6 +3,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { CallResponse, BloodGroup } from "@/lib/types";
 import { BLOOD_GROUP_COLORS } from "@/lib/types";
+import { Badge } from "@/components/Badge";
+import { Card } from "@/components/Card";
+import { ProgressBar } from "@/components/ProgressBar";
+import { Phone } from "@phosphor-icons/react";
 
 interface DonorCall {
   donor_id: string;
@@ -37,13 +41,13 @@ const mockDonors: DonorCall[] = [
   { donor_id: "d20", name: "Zara M", blood_group: "O+", distance_km: 22.0, readiness_score: 0.40, language: "Hindi", status: "pending" },
 ];
 
-const STATUS_CONFIG: Record<string, { color: string; bg: string; label: string; icon: string }> = {
-  pending:    { color: "var(--text-muted)", bg: "var(--bg-surface)", label: "Waiting", icon: "" },
-  calling:    { color: "var(--info)", bg: "var(--info)", label: "Calling", icon: "" },
-  connected:  { color: "var(--green)", bg: "var(--green)", label: "Connected", icon: "" },
-  confirmed:  { color: "var(--success)", bg: "var(--success)", label: "Confirmed", icon: "" },
-  declined:   { color: "var(--highlight)", bg: "var(--highlight)", label: "Declined", icon: "" },
-  no_answer:  { color: "var(--orange)", bg: "var(--orange)", label: "No Answer", icon: "" },
+const STATUS_CONFIG: Record<string, { color: string; label: string }> = {
+  pending:    { color: "var(--text-muted)", label: "Waiting" },
+  calling:    { color: "var(--info)", label: "Calling" },
+  connected:  { color: "var(--positive)", label: "Connected" },
+  confirmed:  { color: "var(--success)", label: "Confirmed" },
+  declined:   { color: "var(--highlight)", label: "Declined" },
+  no_answer:  { color: "var(--warning)", label: "No Answer" },
 };
 
 export default function DonorOutreachPage() {
@@ -144,52 +148,57 @@ export default function DonorOutreachPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
-      <h1 className="mb-2 text-3xl font-bold">AI Voice Call Campaign</h1>
-      <p className="mb-8 text-[var(--text-secondary)]">
+      <h1 className="mb-2 text-3xl font-bold font-display">AI Voice Call Campaign</h1>
+      <p className="mb-8 text-secondary">
         Parallel outbound calls to 20 donors. AI speaks in donor&apos;s language via Amazon Polly + Lex.
       </p>
 
       {/* Campaign Info */}
-      <div className="mb-6 flex flex-wrap items-center gap-4 rounded-2xl border border-border bg-card p-6">
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-[var(--text-muted)]">Patient:</span>
-          <span className="font-semibold">Kavya Reddy</span>
+      <Card className="mb-6">
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted">Patient:</span>
+            <span className="font-semibold font-display">Kavya Reddy</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted">Blood Group:</span>
+            <Badge type="blood" value="O+" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted">Units Needed:</span>
+            <span className="font-semibold font-mono">2</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted">Urgency:</span>
+            <Badge type="status" value="urgent" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted">AWS:</span>
+            <span className="rounded-lg bg-ai/15 px-2 py-0.5 text-xs text-ai">Connect + Polly + Lex</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-[var(--text-muted)]">Blood Group:</span>
-          <span className="rounded-lg bg-blood/20 px-2 py-0.5 text-sm font-bold text-blood">O+</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-[var(--text-muted)]">Units Needed:</span>
-          <span className="font-semibold">2</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-[var(--text-muted)]">Urgency:</span>
-          <span className="rounded-lg bg-blood/20 px-2 py-0.5 text-sm font-bold text-blood">3 days</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-[var(--text-muted)]">AWS:</span>
-          <span className="rounded-lg bg-[var(--ai)]/15 px-2 py-0.5 text-xs text-[var(--ai)]">Connect + Polly + Lex</span>
-        </div>
-      </div>
+      </Card>
 
       {/* Progress */}
-      <div className="mb-6 rounded-2xl border border-border bg-card p-6">
+      <Card className="mb-6">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex gap-6">
             <div>
-              <p className="text-3xl font-bold" style={{ color: confirmedCount >= targetCount ? "var(--success)" : "var(--blood)" }}>
+              <p
+                className="text-3xl font-bold font-mono"
+                style={{ color: confirmedCount >= targetCount ? "var(--success)" : "var(--blood)" }}
+              >
                 {confirmedCount}/{targetCount}
               </p>
-              <p className="text-sm text-[var(--text-muted)]">Confirmed</p>
+              <p className="text-sm text-muted">Confirmed</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[var(--info)]">{callingCount}</p>
-              <p className="text-sm text-[var(--text-muted)]">Active Calls</p>
+              <p className="text-2xl font-bold font-mono text-info">{callingCount}</p>
+              <p className="text-sm text-muted">Active Calls</p>
             </div>
             <div>
-              <p className="text-2xl font-bold text-[var(--highlight)]">{declinedCount}</p>
-              <p className="text-sm text-[var(--text-muted)]">Declined</p>
+              <p className="text-2xl font-bold font-mono text-highlight">{declinedCount}</p>
+              <p className="text-sm text-muted">Declined</p>
             </div>
           </div>
 
@@ -197,7 +206,7 @@ export default function DonorOutreachPage() {
             {!campaignActive && confirmedCount === 0 && (
               <button
                 onClick={() => setCampaignActive(true)}
-                className="rounded-xl bg-blood px-8 py-3 font-semibold text-white transition-all hover:brightness-110"
+                className="rounded-lg bg-blood px-8 py-3 font-semibold font-display text-white transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:brightness-110 hover:-translate-y-[1px] active:scale-[0.98]"
               >
                 Start All Calls
               </button>
@@ -205,7 +214,7 @@ export default function DonorOutreachPage() {
             {campaignActive && (
               <button
                 onClick={handleCancel}
-                className="rounded-xl border border-[var(--highlight)] px-6 py-3 text-sm font-semibold text-[var(--highlight)] hover:bg-[var(--highlight)]/10"
+                className="rounded-lg border border-highlight px-6 py-3 text-sm font-semibold font-display text-highlight hover:bg-highlight/10 transition-colors"
               >
                 Cancel Remaining
               </button>
@@ -213,7 +222,7 @@ export default function DonorOutreachPage() {
             {confirmedCount >= targetCount && (
               <button
                 onClick={handleReset}
-                className="rounded-xl border border-border px-6 py-3 text-sm font-semibold text-[var(--text-secondary)] hover:bg-card-hover"
+                className="rounded-lg border border-border px-6 py-3 text-sm font-semibold font-display text-secondary hover:bg-card-hover transition-colors"
               >
                 Reset Campaign
               </button>
@@ -221,32 +230,26 @@ export default function DonorOutreachPage() {
           </div>
         </div>
 
-        <div className="h-3 overflow-hidden rounded-full bg-surface">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${progressPct}%`,
-              background: `linear-gradient(90deg, var(--blood), var(--success))`,
-            }}
-          />
-        </div>
-
-        {confirmedCount >= targetCount && (
-          <p className="mt-3 text-center text-sm font-semibold text-success">
-            Target met! {confirmedCount} donors confirmed. Remaining calls auto-cancelled.
-          </p>
-        )}
-      </div>
+        <ProgressBar
+          value={confirmedCount}
+          max={targetCount}
+          label={
+            confirmedCount >= targetCount
+              ? `Target met! ${confirmedCount} donors confirmed. Remaining calls auto-cancelled.`
+              : `${confirmedCount} of ${targetCount} donors confirmed`
+          }
+        />
+      </Card>
 
       {/* Call Script Preview */}
-      <div className="mb-6 rounded-2xl border border-border bg-card p-6">
-        <h3 className="mb-3 text-sm font-bold text-[var(--ai)]">Call Script (Amazon Polly)</h3>
-        <div className="rounded-xl bg-surface p-4 text-sm text-[var(--text-secondary)]">
-          <p>&quot;Namaste, this is an automated call from <span className="font-semibold text-[var(--orange)]">Blood Warriors</span>.</p>
+      <Card className="mb-6">
+        <h3 className="mb-3 text-sm font-bold font-display text-ai">Call Script (Amazon Polly)</h3>
+        <div className="rounded-lg bg-surface p-4 text-sm text-secondary">
+          <p>&quot;Namaste, this is an automated call from <span className="font-semibold text-warning">Blood Warriors</span>.</p>
           <p className="mt-1">A patient with <span className="font-semibold text-blood">O Positive</span> blood group needs your help this week.</p>
-          <p className="mt-1">Can you donate? Please press <span className="font-semibold text-success">1 for yes</span> or <span className="font-semibold text-[var(--highlight)]">2 for no</span>.&quot;</p>
+          <p className="mt-1">Can you donate? Please press <span className="font-semibold text-success">1 for yes</span> or <span className="font-semibold text-highlight">2 for no</span>.&quot;</p>
         </div>
-      </div>
+      </Card>
 
       {/* Donor Grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-5">
@@ -256,40 +259,32 @@ export default function DonorOutreachPage() {
           return (
             <div
               key={donor.donor_id}
-              className={`rounded-xl border p-4 transition-all ${
-                isActive ? "animate-pulse-blue" : ""
+              className={`rounded-xl border p-4 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                isActive ? "animate-pulse-border-blue" : ""
               } ${
-                donor.status === "confirmed" ? "animate-pulse-teal" : ""
+                donor.status === "confirmed" ? "animate-pulse-border-teal" : ""
               }`}
               style={{
                 borderColor: `${config.color}40`,
-                background: `${config.bg}08`,
+                background: donor.status === "pending" ? "var(--bg-card)" : `${config.color}08`,
               }}
             >
-              <p className="text-sm font-semibold">{donor.name}</p>
+              <p className="text-sm font-semibold font-display">{donor.name}</p>
               <div className="mt-1 flex items-center gap-2">
-                <span
-                  className="rounded px-1.5 py-0.5 text-xs font-bold"
-                  style={{
-                    background: `${BLOOD_GROUP_COLORS[donor.blood_group]}20`,
-                    color: BLOOD_GROUP_COLORS[donor.blood_group],
-                  }}
-                >
-                  {donor.blood_group}
-                </span>
-                <span className="text-xs text-[var(--text-muted)]">
+                <Badge type="blood" value={donor.blood_group} />
+                <span className="text-xs text-muted font-mono">
                   {donor.distance_km}km
                 </span>
               </div>
-              <p className="mt-1 text-xs text-[var(--text-muted)]">
-                Score: {donor.readiness_score.toFixed(2)} &middot; {donor.language}
+              <p className="mt-1 text-xs text-muted font-mono">
+                Score: {donor.readiness_score.toFixed(2)} · {donor.language}
               </p>
               <div className="mt-3 flex items-center gap-1.5">
                 <div
                   className="h-2 w-2 rounded-full"
                   style={{ background: config.color }}
                 />
-                <span className="text-xs font-semibold" style={{ color: config.color }}>
+                <span className="text-xs font-semibold font-display" style={{ color: config.color }}>
                   {config.label}
                 </span>
               </div>

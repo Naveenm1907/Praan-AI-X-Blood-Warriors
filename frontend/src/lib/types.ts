@@ -82,14 +82,14 @@ export type BloodGroup = "O+" | "O-" | "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-"
 export const BLOOD_GROUPS: BloodGroup[] = ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
 
 export const BLOOD_GROUP_COLORS: Record<BloodGroup, string> = {
-  "O+": "#FD6666",
-  "O-": "#FF5678",
-  "A+": "#41A7F1",
-  "A-": "#64FFE3",
-  "B+": "#FCAA49",
-  "B-": "#29D64F",
-  "AB+": "#AE41F1",
-  "AB-": "#FFFFFF",
+  "O+": "#f14163",
+  "O-": "#c42d4a",
+  "A+": "#4190e8",
+  "A-": "#1fa58a",
+  "B+": "#f59e42",
+  "B-": "#2fb86e",
+  "AB+": "#8a4ac4",
+  "AB-": "#6b4a52",
 };
 
 export const COMPATIBLE_DONORS: Record<BloodGroup, BloodGroup[]> = {

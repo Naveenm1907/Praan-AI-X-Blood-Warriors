@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { Heart } from "@phosphor-icons/react";
 
 export function Footer() {
   return (
@@ -6,8 +9,8 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-8">
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-blood">&#9829;</span>
-            <span className="text-sm font-semibold text-[var(--text-primary)]">
+            <Heart className="text-blood" size={18} weight="fill" />
+            <span className="text-sm font-semibold font-display text-[var(--text-primary)]">
               PRAAN AI
             </span>
             <span className="text-[var(--text-muted)]">&times;</span>

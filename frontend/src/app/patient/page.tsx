@@ -1,8 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import type { BloodGroup, Patient } from "@/lib/types";
 import { BLOOD_GROUPS, BLOOD_GROUP_COLORS } from "@/lib/types";
+import { Badge } from "@/components/Badge";
+import { Button } from "@/components/Button";
+import { Card } from "@/components/Card";
+import { Upload } from "@phosphor-icons/react";
 
 interface OCRResult {
   hb: number;
@@ -96,8 +100,8 @@ export default function PatientPage() {
 
   const getUrgencyColor = (days: number) => {
     if (days <= 3) return "var(--blood)";
-    if (days <= 7) return "var(--orange)";
-    return "var(--green)";
+    if (days <= 7) return "var(--warning)";
+    return "var(--positive)";
   };
 
   const getUrgencyLabel = (days: number) => {
@@ -108,35 +112,35 @@ export default function PatientPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
-      <h1 className="mb-2 text-3xl font-bold">Patient Onboarding</h1>
-      <p className="mb-8 text-[var(--text-secondary)]">
+      <h1 className="mb-2 text-3xl font-bold font-display">Patient Onboarding</h1>
+      <p className="mb-8 text-secondary">
         Register patient, upload medical report, and calculate transfusion urgency window.
       </p>
 
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Form */}
-        <div className="rounded-2xl border border-border bg-card p-8">
-          <h2 className="mb-6 text-xl font-bold">Patient Registration</h2>
+        <Card>
+          <h2 className="mb-6 text-xl font-bold font-display">Patient Registration</h2>
 
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Name</label>
+                <label className="mb-1 block text-sm font-medium text-secondary">Name</label>
                 <input
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-primary focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--border-focus)]/20 focus:outline-none"
                   placeholder="Patient name"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Age</label>
+                <label className="mb-1 block text-sm font-medium text-secondary">Age</label>
                 <input
                   type="number"
                   value={form.age}
                   onChange={(e) => setForm({ ...form, age: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-primary focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--border-focus)]/20 focus:outline-none"
                   placeholder="Age"
                 />
               </div>
@@ -144,11 +148,11 @@ export default function PatientPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Blood Group</label>
+                <label className="mb-1 block text-sm font-medium text-secondary">Blood Group</label>
                 <select
                   value={form.blood_group}
                   onChange={(e) => setForm({ ...form, blood_group: e.target.value as BloodGroup })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-primary focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--border-focus)]/20 focus:outline-none"
                 >
                   {BLOOD_GROUPS.map((g) => (
                     <option key={g} value={g}>{g}</option>
@@ -156,12 +160,12 @@ export default function PatientPage() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Location</label>
+                <label className="mb-1 block text-sm font-medium text-secondary">Location</label>
                 <input
                   type="text"
                   value={form.location}
                   onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-primary focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--border-focus)]/20 focus:outline-none"
                   placeholder="City/District"
                 />
               </div>
@@ -169,21 +173,21 @@ export default function PatientPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Last Transfusion</label>
+                <label className="mb-1 block text-sm font-medium text-secondary">Last Transfusion</label>
                 <input
                   type="date"
                   value={form.last_transfusion_date}
                   onChange={(e) => setForm({ ...form, last_transfusion_date: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-primary focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--border-focus)]/20 focus:outline-none"
                 />
               </div>
               <div>
-                <label className="mb-1 block text-sm text-[var(--text-secondary)]">Cycle Length (days)</label>
+                <label className="mb-1 block text-sm font-medium text-secondary">Cycle Length (days)</label>
                 <input
                   type="number"
                   value={form.cycle_length_days}
                   onChange={(e) => setForm({ ...form, cycle_length_days: e.target.value })}
-                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] focus:border-info focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-primary focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--border-focus)]/20 focus:outline-none"
                   placeholder="21"
                 />
               </div>
@@ -191,22 +195,22 @@ export default function PatientPage() {
 
             {/* Medical Report Upload */}
             <div>
-              <label className="mb-1 block text-sm text-[var(--text-secondary)]">Medical Report</label>
+              <label className="mb-1 block text-sm font-medium text-secondary">Medical Report</label>
               <div
                 onClick={handleUpload}
-                className="cursor-pointer rounded-xl border-2 border-dashed border-border bg-surface p-8 text-center transition-all hover:border-blood"
+                className="cursor-pointer rounded-lg border-2 border-dashed border-border bg-surface p-8 text-center transition-all hover:border-blood"
               >
                 {uploading ? (
                   <div>
-                    <p className="text-sm text-[var(--ai)]">Textract scanning report...</p>
-                    <p className="mt-1 text-xs text-[var(--text-muted)]">Extracting Hb, MCV, MCH, Ferritin</p>
+                    <p className="text-sm text-ai">Textract scanning report...</p>
+                    <p className="mt-1 text-xs text-muted">Extracting Hb, MCV, MCH, Ferritin</p>
                   </div>
                 ) : ocrResult ? (
                   <p className="text-sm text-success">Report scanned successfully</p>
                 ) : (
                   <div>
-                    <p className="text-2xl">&#128196;</p>
-                    <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                    <Upload className="mx-auto" size={32} weight="regular" />
+                    <p className="mt-2 text-sm text-secondary">
                       Click to upload PDF/Image (simulated Textract OCR)
                     </p>
                   </div>
@@ -217,20 +221,20 @@ export default function PatientPage() {
             <button
               onClick={handleSubmit}
               disabled={!form.name || !form.age || !form.last_transfusion_date || !ocrResult}
-              className="w-full rounded-xl bg-blood py-3 text-sm font-semibold text-white transition-all hover:brightness-110 disabled:opacity-40"
+              className="w-full rounded-lg bg-blood py-3 text-sm font-semibold font-display text-white transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Register Patient & Calculate Urgency
             </button>
           </div>
-        </div>
+        </Card>
 
         {/* Right side: OCR Results + Urgency */}
         <div className="space-y-6">
           {/* OCR Results */}
           {ocrResult && (
-            <div className="rounded-2xl border border-border bg-card p-8">
-              <h2 className="mb-4 text-xl font-bold">Medical Report Values</h2>
-              <p className="mb-4 text-xs text-[var(--ai)]">Extracted by AWS Textract OCR</p>
+            <Card>
+              <h2 className="mb-4 text-xl font-bold font-display">Medical Report Values</h2>
+              <p className="mb-4 text-xs text-ai">Extracted by AWS Textract OCR</p>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 {[
                   { label: "Hb", value: `${ocrResult.hb} g/dL`, low: ocrResult.hb < 10 },
@@ -240,107 +244,98 @@ export default function PatientPage() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className={`rounded-xl border p-4 text-center ${
+                    className={`rounded-lg border p-4 text-center ${
                       item.low ? "border-blood/30 bg-blood/5" : "border-border bg-surface"
                     }`}
                   >
-                    <p className="text-xs text-[var(--text-muted)]">{item.label}</p>
-                    <p className="mt-1 text-xl font-bold">{item.value}</p>
+                    <p className="text-xs text-muted">{item.label}</p>
+                    <p className="mt-1 text-xl font-bold font-mono">{item.value}</p>
                     {item.low && (
                       <span className="text-xs text-blood">Low</span>
                     )}
                   </div>
                 ))}
               </div>
-            </div>
+            </Card>
           )}
 
-          {/* Urgency Window */}
+          {/* Urgency Window - top border instead of side-stripe */}
           {newPatient && newPatient.urgency_window_days && (
-            <div
-              className="rounded-2xl border-l-4 bg-card p-8"
-              style={{ borderColor: getUrgencyColor(newPatient.urgency_window_days) }}
+            <Card
+              className="border-t-4"
+              style={{ borderTopColor: getUrgencyColor(newPatient.urgency_window_days) }}
             >
-              <h2 className="mb-2 text-xl font-bold">Transfusion Urgency Window</h2>
+              <h2 className="mb-2 text-xl font-bold font-display">Transfusion Urgency Window</h2>
               <div className="mt-4 text-center">
-                <p className="font-mono text-4xl font-bold" style={{ color: getUrgencyColor(newPatient.urgency_window_days) }}>
+                <p
+                  className="text-4xl font-bold font-mono"
+                  style={{ color: getUrgencyColor(newPatient.urgency_window_days) }}
+                >
                   {newPatient.urgency_window_days} DAYS
                 </p>
-                <p className="mt-2 text-sm text-[var(--text-secondary)]">
+                <p className="mt-2 text-sm text-secondary">
                   until next transfusion needed
                 </p>
               </div>
               <div className="mt-6 flex items-center justify-center">
-                <span
-                  className="rounded-full px-4 py-1 text-sm font-bold"
-                  style={{
-                    background: `${getUrgencyColor(newPatient.urgency_window_days)}20`,
-                    color: getUrgencyColor(newPatient.urgency_window_days),
-                  }}
-                >
-                  {getUrgencyLabel(newPatient.urgency_window_days)} — Donor search starts NOW
+                <Badge
+                  type="status"
+                  value={getUrgencyLabel(newPatient.urgency_window_days).toLowerCase()}
+                />
+                <span className="ml-2 text-sm text-secondary">
+                  Donor search starts NOW
                 </span>
               </div>
               <div className="mt-6 flex gap-3">
-                <a
-                  href="/blood-bank"
-                  className="flex-1 rounded-xl border border-border bg-surface py-3 text-center text-sm font-semibold text-[var(--text-secondary)] hover:bg-card-hover"
-                >
-                  Check Blood Banks
-                </a>
-                <a
-                  href="/donor-outreach"
-                  className="flex-1 rounded-xl bg-blood py-3 text-center text-sm font-semibold text-white hover:brightness-110"
-                >
-                  Start Voice Calls
-                </a>
+                <Link href="/blood-bank">
+                  <Button variant="secondary" size="sm" className="w-full">
+                    Check Blood Banks
+                  </Button>
+                </Link>
+                <Link href="/donor-outreach">
+                  <Button variant="primary" size="sm" className="w-full">
+                    Start Voice Calls
+                  </Button>
+                </Link>
               </div>
-            </div>
+            </Card>
           )}
 
           {/* Existing Patients */}
-          <div className="rounded-2xl border border-border bg-card p-8">
-            <h2 className="mb-4 text-xl font-bold">Active Patients</h2>
+          <Card>
+            <h2 className="mb-4 text-xl font-bold font-display">Active Patients</h2>
             <div className="space-y-3">
               {patients
                 .sort((a, b) => (a.urgency_window_days || 99) - (b.urgency_window_days || 99))
                 .map((p) => (
                   <div
                     key={p.patient_id}
-                    className="flex items-center justify-between rounded-xl border border-border bg-surface p-4"
+                    className="flex items-center justify-between rounded-lg border border-border bg-surface p-4"
                   >
                     <div className="flex items-center gap-3">
-                      <span
-                        className="rounded-lg px-2 py-1 text-xs font-bold"
-                        style={{
-                          background: `${BLOOD_GROUP_COLORS[p.blood_group]}20`,
-                          color: BLOOD_GROUP_COLORS[p.blood_group],
-                        }}
-                      >
-                        {p.blood_group}
-                      </span>
+                      <Badge type="blood" value={p.blood_group} />
                       <div>
-                        <p className="text-sm font-semibold">{p.name}</p>
-                        <p className="text-xs text-[var(--text-muted)]">
+                        <p className="text-sm font-semibold font-display">{p.name}</p>
+                        <p className="text-xs text-muted">
                           Age {p.age} &middot; {p.location}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p
-                        className="font-mono text-lg font-bold"
+                        className="text-lg font-bold font-mono"
                         style={{ color: getUrgencyColor(p.urgency_window_days || 99) }}
                       >
                         {p.urgency_window_days}d
                       </p>
-                      <p className="text-xs text-[var(--text-muted)]">
+                      <p className="text-xs text-muted">
                         {getUrgencyLabel(p.urgency_window_days || 99)}
                       </p>
                     </div>
                   </div>
                 ))}
             </div>
-          </div>
+          </Card>
         </div>
       </div>
     </div>
