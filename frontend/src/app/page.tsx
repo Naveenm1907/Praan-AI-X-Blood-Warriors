@@ -1,195 +1,246 @@
+"use client";
+
 import Link from "next/link";
-
-const stats = [
-  { value: "5,596", label: "Registered Donors" },
-  { value: "4,366", label: "Blood Collections" },
-  { value: "1,34,000+", label: "Lives Touched" },
-  { value: "2M+", label: "Digital Reach" },
-];
-
-const differentiators = [
-  {
-    icon: "🏥",
-    title: "Blood Bank Automation",
-    description:
-      "Check blood banks first. Auto-search by blood group and district, reserve units instantly, track expiry dates. Donors are the last resort, not the first.",
-    cta: "/blood-bank",
-    ctaLabel: "View Inventory",
-    aws: "DynamoDB + Lambda + S3",
-    color: "var(--blood)",
-  },
-  {
-    icon: "⏱",
-    title: "Transfusion Urgency Window",
-    description:
-      "Upload a medical report and the AI reads Hb, MCV, ferritin values. Calculates exactly how many days the patient can wait. No guessing, no severity labels — just a countdown.",
-    cta: "/patient",
-    ctaLabel: "Onboard Patient",
-    aws: "Textract + SageMaker + Bedrock",
-    color: "var(--orange)",
-  },
-  {
-    icon: "📞",
-    title: "AI Voice Call Assistant",
-    description:
-      "Calls 20 donors simultaneously in their language. Polly speaks, Lex listens, dashboard updates live. A 2-hour coordinator task done in 5 minutes.",
-    cta: "/donor-outreach",
-    ctaLabel: "Start Campaign",
-    aws: "Connect + Polly + Lex + Lambda",
-    color: "var(--blue)",
-  },
-];
-
-const workflowSteps = [
-  { step: "1", label: "Patient Onboards", detail: "Upload medical report" },
-  { step: "2", label: "AI Reads Report", detail: "OCR extracts Hb, MCV, ferritin" },
-  { step: "3", label: "Urgency Calculated", detail: "Countdown timer starts" },
-  { step: "4", label: "Blood Bank Check", detail: "Search, reserve, or skip" },
-  { step: "5", label: "Donors Ranked", detail: "Readiness score from 5 signals" },
-  { step: "6", label: "20 Parallel Calls", detail: "AI speaks in donor language" },
-  { step: "7", label: "Donors Confirmed", detail: "Remaining calls auto-cancel" },
-];
+import { Heart, Hospital, Clock, Phone } from "@phosphor-icons/react";
+import { Button } from "@/components/Button";
 
 export default function Home() {
   return (
-    <div>
-      {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-[var(--blood)]/10 to-transparent" />
-        <div className="relative mx-auto max-w-7xl px-6 py-24 text-center">
-          <div className="mb-6 flex items-center justify-center gap-3">
-            <span className="text-4xl text-blood">&#9829;</span>
-            <h1 className="text-4xl font-bold tracking-tight text-[var(--text-primary)] sm:text-5xl">
-              PRAAN AI
-            </h1>
-            <span className="text-2xl text-[var(--text-muted)]">&times;</span>
-            <span className="text-2xl font-semibold text-[var(--orange)]">
-              Blood Warriors
-            </span>
-          </div>
+    <div className="relative">
+      {/* Noise overlay */}
+      <div className="noise-overlay" />
 
-          <p className="mx-auto max-w-2xl text-xl text-[var(--text-secondary)]">
-            AI-Powered Blood Coordination for Thalassemia Fighters.
-            Every drop counts. Every second matters.
-          </p>
-
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <Link
-              href="/coordinator"
-              className="rounded-xl bg-blood px-8 py-3 text-base font-semibold text-white transition-all hover:brightness-110"
-            >
-              See the Demo
-            </Link>
-            <Link
-              href="/patient"
-              className="rounded-xl border border-blood px-8 py-3 text-base font-semibold text-blood transition-all hover:bg-blood/10"
-            >
-              Onboard Patient
-            </Link>
-          </div>
-
-          {/* Stats */}
-          <div className="mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
-            {stats.map((s) => (
-              <div
-                key={s.label}
-                className="rounded-2xl border border-border bg-card p-6"
-              >
-                <p className="text-2xl font-bold text-[var(--text-primary)]">
-                  {s.value}
-                </p>
-                <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                  {s.label}
-                </p>
+      {/* Hero - Dramatic editorial style */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="mx-auto max-w-7xl px-6 py-32 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            {/* Left: Massive title */}
+            <div className="md:col-span-8 relative">
+              <div className="mb-4 flex items-center gap-3">
+                <Heart className="text-blood" size={24} weight="fill" />
+                <span className="text-sm uppercase tracking-widest text-[var(--blood-pink)] font-medium">
+                  Blood Warriors × AI
+                </span>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Differentiators */}
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        <h2 className="mb-4 text-center text-3xl font-bold">
-          What Makes Us Different
-        </h2>
-        <p className="mx-auto mb-12 max-w-xl text-center text-[var(--text-secondary)]">
-          Other teams start with donor search. We check blood banks first,
-          calculate urgency from medical data, and call 20 donors at once.
-        </p>
-
-        <div className="grid gap-6 md:grid-cols-3">
-          {differentiators.map((d) => (
-            <div
-              key={d.title}
-              className="group rounded-2xl border border-border bg-card p-8 transition-all hover:-translate-y-1 hover:shadow-lg hover:shadow-black/30"
-            >
-              <div
-                className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl text-2xl"
-                style={{ background: `${d.color}20` }}
-              >
-                {d.icon}
-              </div>
-              <h3 className="mb-2 text-xl font-bold">{d.title}</h3>
-              <p className="mb-6 text-sm leading-relaxed text-[var(--text-secondary)]">
-                {d.description}
+              <h1 className="editorial text-7xl md:text-8xl lg:text-9xl font-bold mb-8">
+                <span className="block">PRAAN</span>
+                <span className="block text-[var(--blood-pink)]">AI</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-[var(--text-secondary)] max-w-2xl mb-12 leading-relaxed">
+                Autonomous blood coordination network. <br className="hidden md:block" />
+                <span className="text-[var(--text-primary)] font-medium">2 hours of coordination in 5 minutes.</span>
               </p>
-              <Link
-                href={d.cta}
-                className="text-sm font-semibold text-info transition-colors hover:underline"
-              >
-                {d.ctaLabel} &rarr;
-              </Link>
-              <div className="mt-4 inline-block rounded-full bg-[var(--ai)]/15 px-3 py-1 text-xs text-[var(--ai)]">
-                {d.aws}
+              <div className="flex flex-wrap gap-4">
+                <Link href="/coordinator">
+                  <Button variant="primary">
+                    Launch Dashboard
+                  </Button>
+                </Link>
+                <Link href="/patient">
+                  <Button variant="editorial">
+                    Onboard Patient
+                  </Button>
+                </Link>
               </div>
             </div>
-          ))}
+
+            {/* Right: Dramatic stat */}
+            <div className="md:col-span-4 md:ml-auto">
+              <div className="bg-[var(--blood-pink)] text-white p-8 -mr-6 md:-mr-12">
+                <div className="text-6xl md:text-7xl font-bold mb-2">5,596</div>
+                <div className="text-sm uppercase tracking-wider opacity-90">Registered Donors</div>
+                <div className="mt-6 pt-6 border-t border-white/20">
+                  <div className="text-2xl font-bold mb-1">4,366</div>
+                  <div className="text-xs uppercase tracking-wider opacity-90">Collections</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* Workflow */}
-      <section className="bg-[var(--bg-surface)] py-20">
+      {/* Stats - Asymmetric editorial layout */}
+      <section className="py-32 border-t border-[var(--border)]">
         <div className="mx-auto max-w-7xl px-6">
-          <h2 className="mb-12 text-center text-3xl font-bold">
-            How PRAAN AI Works
-          </h2>
-          <div className="flex flex-wrap items-start justify-center gap-4">
-            {workflowSteps.map((s, i) => (
-              <div key={s.step} className="flex items-center gap-4">
-                <div className="w-36 text-center">
-                  <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-blood/20 text-lg font-bold text-blood">
-                    {s.step}
-                  </div>
-                  <p className="text-sm font-semibold">{s.label}</p>
-                  <p className="text-xs text-[var(--text-muted)]">{s.detail}</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+            <div className="col-span-2">
+              <div className="text-6xl md:text-7xl font-bold text-[var(--text-primary)] mb-2">1,34,000+</div>
+              <div className="text-sm uppercase tracking-wider text-[var(--text-secondary)]">Lives Touched</div>
+              <div className="accent-bar mt-4" />
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-[var(--text-primary)] mb-2">2M+</div>
+              <div className="text-sm uppercase tracking-wider text-[var(--text-secondary)]">Digital Reach</div>
+            </div>
+            <div>
+              <div className="text-4xl md:text-5xl font-bold text-[var(--blood-pink)] mb-2">5min</div>
+              <div className="text-sm uppercase tracking-wider text-[var(--text-secondary)]">Average Time</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Differentiators - Broken grid editorial */}
+      <section className="py-32 border-t border-[var(--border)]">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-20">
+            <div className="accent-bar mb-6" />
+            <h2 className="editorial text-5xl md:text-6xl font-bold mb-6">
+              Three Differentiators
+            </h2>
+            <p className="text-xl text-[var(--text-secondary)] max-w-2xl">
+              Other teams start with donor search. We check blood banks first,
+              calculate urgency from medical data, and call 20 donors at once.
+            </p>
+          </div>
+
+          {/* Feature 1 - Full width */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-20 pb-20 border-b border-[var(--border)]">
+            <div className="md:col-span-5">
+              <div className="sticky top-32">
+                <div className="inline-block px-4 py-2 bg-[var(--blood-pink)]/10 text-[var(--blood-pink)] text-sm uppercase tracking-wider mb-6">
+                  01
                 </div>
-                {i < workflowSteps.length - 1 && (
-                  <span className="text-[var(--text-muted)]">&rarr;</span>
-                )}
+                <h3 className="text-3xl md:text-4xl font-bold mb-4">Blood Bank Automation</h3>
+                <p className="text-lg text-[var(--text-secondary)] mb-6">
+                  Check blood banks first. Auto-search by blood group and district, reserve units instantly, track expiry dates.
+                </p>
+                <Link href="/blood-bank" className="inline-flex items-center gap-2 text-[var(--blood-pink)] hover:gap-3 transition-all">
+                  <span className="font-medium">View Inventory</span>
+                  <span>→</span>
+                </Link>
+              </div>
+            </div>
+            <div className="md:col-span-7">
+              <div className="bg-[var(--bg-surface)] p-8 md:p-12">
+                <Hospital size={48} weight="regular" className="text-[var(--blood-pink)] mb-6" />
+                <div className="text-sm uppercase tracking-wider text-[var(--text-secondary)] mb-2">AWS Stack</div>
+                <div className="text-lg font-mono text-[var(--text-primary)]">
+                  DynamoDB + Lambda + S3
+                </div>
+                <div className="mt-8 pt-8 border-t border-[var(--border)]">
+                  <p className="text-[var(--text-secondary)]">
+                    Donors are the last resort, not the first. We check 30+ blood banks before activating donor search.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Feature 2 - Two columns */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="pb-12 border-b md:border-b-0 md:border-r border-[var(--border)] md:pr-12">
+              <div className="inline-block px-4 py-2 bg-[var(--orange)]/10 text-[var(--orange)] text-sm uppercase tracking-wider mb-6">
+                02
+              </div>
+              <Clock size={40} weight="regular" className="text-[var(--orange)] mb-4" />
+              <h3 className="text-2xl md:text-3xl font-bold mb-4">Transfusion Urgency Window</h3>
+              <p className="text-[var(--text-secondary)] mb-6">
+                Upload a medical report and the AI reads Hb, MCV, ferritin values. Calculates exactly how many days the patient can wait.
+              </p>
+              <div className="flex items-center justify-between mb-6">
+                <Link href="/patient" className="inline-flex items-center gap-2 text-[var(--orange)] hover:gap-3 transition-all">
+                  <span className="font-medium">Onboard Patient</span>
+                  <span>→</span>
+                </Link>
+                <span className="text-xs uppercase tracking-wider text-[var(--text-secondary)]">
+                  Textract + SageMaker
+                </span>
+              </div>
+            </div>
+
+            <div className="pb-12">
+              <div className="inline-block px-4 py-2 bg-[var(--info)]/10 text-[var(--info)] text-sm uppercase tracking-wider mb-6">
+                03
+              </div>
+              <Phone size={40} weight="regular" className="text-[var(--info)] mb-4" />
+              <h3 className="text-2xl md:text-3xl font-bold mb-4">AI Voice Call Assistant</h3>
+              <p className="text-[var(--text-secondary)] mb-6">
+                Calls 20 donors simultaneously in their language. Polly speaks, Lex listens, dashboard updates live.
+              </p>
+              <div className="flex items-center justify-between">
+                <Link href="/donor-outreach" className="inline-flex items-center gap-2 text-[var(--info)] hover:gap-3 transition-all">
+                  <span className="font-medium">Start Campaign</span>
+                  <span>→</span>
+                </Link>
+                <span className="text-xs uppercase tracking-wider text-[var(--text-secondary)]">
+                  Connect + Polly + Lex
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Workflow - Vertical editorial timeline */}
+      <section className="py-32 bg-[var(--blood-pink)] text-white">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-16">
+            <h2 className="editorial text-5xl md:text-6xl font-bold mb-6">
+              The Workflow
+            </h2>
+            <p className="text-xl opacity-90 max-w-2xl">
+              Seven steps from patient registration to confirmed donors. Fully automated.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8">
+            {[
+              { step: "01", label: "Patient Onboards", detail: "Upload medical report" },
+              { step: "02", label: "AI Reads Report", detail: "OCR extracts Hb, MCV, ferritin" },
+              { step: "03", label: "Urgency Calculated", detail: "Countdown timer starts" },
+              { step: "04", label: "Blood Bank Check", detail: "Search, reserve, or skip" },
+              { step: "05", label: "Donors Ranked", detail: "Readiness score from 5 signals" },
+              { step: "06", label: "20 Parallel Calls", detail: "AI speaks in donor language" },
+              { step: "07", label: "Donors Confirmed", detail: "Remaining calls auto-cancel" },
+            ].map((s, i) => (
+              <div
+                key={s.step}
+                className={`flex gap-6 ${i % 2 === 0 ? 'md:translate-y-0' : 'md:translate-y-12'}`}
+              >
+                <div className="text-4xl font-bold opacity-50">{s.step}</div>
+                <div>
+                  <div className="text-xl font-bold mb-1">{s.label}</div>
+                  <div className="text-sm opacity-90">{s.detail}</div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Tech Stack */}
-      <section className="mx-auto max-w-7xl px-6 py-20">
-        <h2 className="mb-12 text-center text-3xl font-bold">
-          Built on AWS
-        </h2>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-          {[
-            "DynamoDB", "Lambda", "API Gateway", "S3",
-            "Bedrock", "SageMaker", "Textract", "Polly",
-            "Amazon Connect", "Lex", "SNS", "CloudWatch",
-          ].map((service) => (
-            <div
-              key={service}
-              className="rounded-xl border border-border bg-card px-4 py-3 text-center text-sm font-medium text-[var(--text-secondary)]"
-            >
-              {service}
+      {/* Tech Stack - Editorial list */}
+      <section className="py-32 border-t border-[var(--border)]">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
+            <div className="md:col-span-4">
+              <div className="sticky top-32">
+                <div className="accent-bar mb-6" />
+                <h2 className="editorial text-4xl md:text-5xl font-bold mb-4">
+                  Built on AWS
+                </h2>
+                <p className="text-lg text-[var(--text-secondary)]">
+                  Enterprise-grade infrastructure for mission-critical blood coordination.
+                </p>
+              </div>
             </div>
-          ))}
+            <div className="md:col-span-8">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-[var(--border)]">
+                {[
+                  "DynamoDB", "Lambda", "API Gateway", "S3",
+                  "Bedrock", "SageMaker", "Textract", "Polly",
+                  "Amazon Connect", "Lex", "SNS", "CloudWatch",
+                ].map((service) => (
+                  <div
+                    key={service}
+                    className="bg-[var(--bg-primary)] p-6 text-center hover:bg-[var(--bg-surface)] transition-colors"
+                  >
+                    <div className="text-sm font-mono text-[var(--text-primary)]">{service}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
     </div>

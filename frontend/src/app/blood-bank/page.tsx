@@ -3,6 +3,9 @@
 import { useState } from "react";
 import type { BloodGroup, BloodBank } from "@/lib/types";
 import { BLOOD_GROUPS, BLOOD_GROUP_COLORS } from "@/lib/types";
+import { Badge } from "@/components/Badge";
+import { Card } from "@/components/Card";
+import { Warning } from "@phosphor-icons/react";
 
 const mockBloodBanks: BloodBank[] = [
   {
@@ -142,8 +145,8 @@ export default function BloodBankPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
-      <h1 className="mb-2 text-3xl font-bold">Blood Bank Inventory</h1>
-      <p className="mb-8 text-[var(--text-secondary)]">
+      <h1 className="mb-2 text-3xl font-bold font-display">Blood Bank Inventory</h1>
+      <p className="mb-8 text-secondary">
         Real-time stock across partner blood banks. Search, reserve, and track expiry.
       </p>
 
@@ -153,39 +156,42 @@ export default function BloodBankPage() {
           <button
             key={group}
             onClick={() => setSearchGroup(searchGroup === group ? "" : group)}
-            className={`rounded-xl border p-4 text-center transition-all ${
+            className={`rounded-xl border p-4 text-center transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
               searchGroup === group
-                ? "border-[var(--blood)] bg-[var(--blood)]/10"
+                ? "border-blood bg-blood/10"
                 : "border-border bg-card hover:bg-card-hover"
             }`}
           >
             <span
-              className="text-lg font-bold"
+              className="text-lg font-bold font-mono"
               style={{ color: BLOOD_GROUP_COLORS[group] }}
             >
               {group}
             </span>
-            <p className="mt-1 text-2xl font-bold">{totals[group] || 0}</p>
-            <p className="text-xs text-[var(--text-muted)]">units</p>
+            <p className="mt-1 text-2xl font-bold font-display">{totals[group] || 0}</p>
+            <p className="text-xs text-muted">units</p>
           </button>
         ))}
       </div>
 
       {/* Expiry Alerts */}
       {expiringStock.length > 0 && (
-        <div className="mb-6 rounded-xl border border-[var(--orange)]/30 bg-[var(--orange)]/5 p-4">
-          <p className="mb-2 text-sm font-semibold text-[var(--orange)]">
-            Expiry Alerts ({expiringStock.length} items expiring within 7 days)
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {expiringStock.map((item, i) => (
-              <span
-                key={i}
-                className="rounded-lg bg-[var(--orange)]/15 px-3 py-1 text-xs text-[var(--orange)]"
-              >
-                {item.bank} — {item.group}: {item.units} units ({item.daysLeft}d left)
-              </span>
-            ))}
+        <div className="mb-6 flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/5 p-4">
+          <Warning className="mt-0.5 shrink-0" size={20} weight="regular" style={{ color: "var(--warning)" }} />
+          <div>
+            <p className="text-sm font-semibold font-display text-warning">
+              Expiry Alerts ({expiringStock.length} items expiring within 7 days)
+            </p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {expiringStock.map((item, i) => (
+                <span
+                  key={i}
+                  className="rounded-lg bg-warning/15 px-3 py-1 text-xs text-warning"
+                >
+                  {item.bank} — {item.group}: {item.units} units ({item.daysLeft}d left)
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -197,12 +203,12 @@ export default function BloodBankPage() {
           placeholder="Search district..."
           value={searchDistrict}
           onChange={(e) => setSearchDistrict(e.target.value)}
-          className="rounded-xl border border-border bg-surface px-4 py-3 text-sm text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:border-info focus:outline-none"
+          className="rounded-lg border border-border bg-surface px-4 py-3 text-sm text-primary placeholder-muted focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--border-focus)]/20 focus:outline-none"
         />
         {searchGroup && (
           <button
             onClick={() => setSearchGroup("")}
-            className="rounded-xl border border-border bg-card px-4 py-3 text-sm text-[var(--text-secondary)] hover:bg-card-hover"
+            className="rounded-lg border border-border bg-card px-4 py-3 text-sm text-secondary hover:bg-card-hover transition-colors"
           >
             Clear filter: {searchGroup}
           </button>
@@ -212,18 +218,15 @@ export default function BloodBankPage() {
       {/* Bank Cards */}
       <div className="grid gap-4 md:grid-cols-2">
         {filteredBanks.map((bank) => (
-          <div
-            key={bank.bank_id}
-            className="rounded-2xl border border-border bg-card p-6 transition-all hover:bg-card-hover"
-          >
+          <Card key={bank.bank_id} hover>
             <div className="mb-4 flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-bold">{bank.name}</h3>
-                <p className="text-sm text-[var(--text-muted)]">
+                <h3 className="text-lg font-bold font-display">{bank.name}</h3>
+                <p className="text-sm text-muted">
                   {bank.district}, {bank.state}
                 </p>
               </div>
-              <p className="text-xs text-[var(--text-muted)]">{bank.contact_phone}</p>
+              <p className="text-xs text-muted font-mono">{bank.contact_phone}</p>
             </div>
 
             <div className="flex flex-wrap gap-2">
@@ -233,23 +236,18 @@ export default function BloodBankPage() {
                 return (
                   <div
                     key={group}
-                    className="flex-1 rounded-xl border border-border bg-surface p-3"
+                    className="flex-1 rounded-lg border border-border bg-surface p-3"
                   >
                     <div className="flex items-center justify-between">
-                      <span
-                        className="text-sm font-bold"
-                        style={{ color: BLOOD_GROUP_COLORS[group as BloodGroup] }}
-                      >
-                        {group}
-                      </span>
+                      <Badge type="blood" value={group as BloodGroup} />
                       {daysLeft <= 7 && (
-                        <span className="rounded bg-[var(--orange)]/20 px-1.5 py-0.5 text-[10px] text-[var(--orange)]">
+                        <span className="rounded bg-warning/20 px-1.5 py-0.5 text-[10px] font-mono text-warning">
                           {daysLeft}d
                         </span>
                       )}
                     </div>
-                    <p className="mt-1 text-2xl font-bold">{data.units_available}</p>
-                    <p className="text-xs text-[var(--text-muted)]">
+                    <p className="mt-1 text-2xl font-bold font-mono">{data.units_available}</p>
+                    <p className="text-xs text-muted">
                       {data.reserved_count > 0 && `${data.reserved_count} reserved · `}
                       expires {data.expiry_date}
                     </p>
@@ -257,10 +255,10 @@ export default function BloodBankPage() {
                       <button
                         onClick={() => handleReserve(bank.bank_id, group)}
                         disabled={isReserved}
-                        className={`mt-2 w-full rounded-lg py-1.5 text-xs font-semibold transition-all ${
+                        className={`mt-2 w-full rounded-lg py-1.5 text-xs font-semibold font-display transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
                           isReserved
-                            ? "bg-success/20 text-success"
-                            : "bg-blood/20 text-blood hover:bg-blood/30"
+                            ? "bg-success/20 text-success cursor-default"
+                            : "bg-blood/20 text-blood hover:bg-blood/30 active:scale-[0.98]"
                         }`}
                       >
                         {isReserved ? "Reserved" : "Reserve 1 Unit"}
@@ -270,25 +268,25 @@ export default function BloodBankPage() {
                 );
               })}
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       {filteredBanks.length === 0 && (
-        <div className="mt-12 rounded-2xl border border-border bg-card p-12 text-center">
-          <p className="text-lg font-semibold text-[var(--text-secondary)]">
+        <Card className="mt-12 text-center">
+          <p className="text-lg font-semibold font-display text-secondary">
             No blood banks found with {searchGroup || "available stock"}
           </p>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">
+          <p className="mt-2 text-sm text-muted">
             Activating donor search...
           </p>
           <a
             href="/donor-outreach"
-            className="mt-4 inline-block rounded-xl bg-blood px-6 py-3 text-sm font-semibold text-white"
+            className="mt-4 inline-block rounded-lg bg-blood px-6 py-3 text-sm font-semibold font-display text-white hover:brightness-110 active:scale-[0.98] transition-all"
           >
             Start Voice Call Campaign &rarr;
           </a>
-        </div>
+        </Card>
       )}
     </div>
   );
