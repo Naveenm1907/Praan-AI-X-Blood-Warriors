@@ -1,0 +1,140 @@
+{
+  "blood_banks": [
+    {
+      "bank_id": "bb001", "name": "Apollo Blood Bank", "district": "Hyderabad", "state": "Telangana",
+      "contact_phone": "+91 40-2345-6789",
+      "inventory": {
+        "O+": {"units_available": 5, "expiry_date": "2026-10-15", "reserved_count": 1},
+        "A+": {"units_available": 3, "expiry_date": "2026-09-28", "reserved_count": 0},
+        "B+": {"units_available": 2, "expiry_date": "2026-06-12", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb002", "name": "NIMS Blood Centre", "district": "Hyderabad", "state": "Telangana",
+      "contact_phone": "+91 40-2348-9012",
+      "inventory": {
+        "B+": {"units_available": 4, "expiry_date": "2026-09-20", "reserved_count": 0},
+        "O-": {"units_available": 1, "expiry_date": "2026-07-15", "reserved_count": 0},
+        "A+": {"units_available": 2, "expiry_date": "2026-08-30", "reserved_count": 1}
+      }
+    },
+    {
+      "bank_id": "bb003", "name": "Indian Red Cross Blood Bank", "district": "Secunderabad", "state": "Telangana",
+      "contact_phone": "+91 40-2789-0123",
+      "inventory": {
+        "AB+": {"units_available": 2, "expiry_date": "2026-10-02", "reserved_count": 0},
+        "O+": {"units_available": 3, "expiry_date": "2026-09-15", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb004", "name": "Yashoda Blood Bank", "district": "Hyderabad", "state": "Telangana",
+      "contact_phone": "+91 40-4567-8901",
+      "inventory": {
+        "A+": {"units_available": 6, "expiry_date": "2026-10-20", "reserved_count": 2},
+        "O+": {"units_available": 4, "expiry_date": "2026-09-10", "reserved_count": 0},
+        "B-": {"units_available": 1, "expiry_date": "2026-06-09", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb005", "name": "KIMS Blood Centre", "district": "Warangal", "state": "Telangana",
+      "contact_phone": "+91 870-234-5678",
+      "inventory": {
+        "O+": {"units_available": 2, "expiry_date": "2026-08-25", "reserved_count": 0},
+        "B+": {"units_available": 3, "expiry_date": "2026-09-05", "reserved_count": 0},
+        "A-": {"units_available": 1, "expiry_date": "2026-07-20", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb006", "name": "Care Hospital Blood Bank", "district": "Hyderabad", "state": "Telangana",
+      "contact_phone": "+91 40-3456-7890",
+      "inventory": {
+        "O+": {"units_available": 7, "expiry_date": "2026-11-01", "reserved_count": 0},
+        "O-": {"units_available": 2, "expiry_date": "2026-08-15", "reserved_count": 1},
+        "AB+": {"units_available": 3, "expiry_date": "2026-09-30", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb007", "name": "Continental Blood Centre", "district": "Hyderabad", "state": "Telangana",
+      "contact_phone": "+91 40-6789-0123",
+      "inventory": {
+        "B+": {"units_available": 5, "expiry_date": "2026-10-10", "reserved_count": 0},
+        "A+": {"units_available": 4, "expiry_date": "2026-09-22", "reserved_count": 0},
+        "AB-": {"units_available": 1, "expiry_date": "2026-07-05", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb008", "name": "Rainbow Children Blood Bank", "district": "Hyderabad", "state": "Telangana",
+      "contact_phone": "+91 40-2345-0000",
+      "inventory": {
+        "O+": {"units_available": 3, "expiry_date": "2026-08-18", "reserved_count": 0},
+        "A+": {"units_available": 2, "expiry_date": "2026-09-12", "reserved_count": 0},
+        "B+": {"units_available": 1, "expiry_date": "2026-06-15", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb009", "name": "MaxCure Blood Bank", "district": "Hyderabad", "state": "Telangana",
+      "contact_phone": "+91 40-2345-1111",
+      "inventory": {
+        "O+": {"units_available": 4, "expiry_date": "2026-09-25", "reserved_count": 0},
+        "A-": {"units_available": 2, "expiry_date": "2026-08-10", "reserved_count": 0},
+        "B+": {"units_available": 3, "expiry_date": "2026-10-05", "reserved_count": 1}
+      }
+    },
+    {
+      "bank_id": "bb010", "name": "Global Hospitals Blood Bank", "district": "Hyderabad", "state": "Telangana",
+      "contact_phone": "+91 40-4477-8899",
+      "inventory": {
+        "O+": {"units_available": 6, "expiry_date": "2026-10-30", "reserved_count": 0},
+        "A+": {"units_available": 5, "expiry_date": "2026-11-15", "reserved_count": 0},
+        "B+": {"units_available": 4, "expiry_date": "2026-09-18", "reserved_count": 0},
+        "AB+": {"units_available": 2, "expiry_date": "2026-08-22", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb011", "name": "Sunshine Blood Centre", "district": "Secunderabad", "state": "Telangana",
+      "contact_phone": "+91 40-2789-4455",
+      "inventory": {
+        "O-": {"units_available": 3, "expiry_date": "2026-09-01", "reserved_count": 0},
+        "B+": {"units_available": 2, "expiry_date": "2026-08-14", "reserved_count": 0},
+        "A+": {"units_available": 3, "expiry_date": "2026-10-12", "reserved_count": 0}
+      }
+    },
+    {
+      "bank_id": "bb012", "name": "Omni Blood Bank", "district": "Warangal", "state": "Telangana",
+      "contact_phone": "+91 870-234-9900",
+      "inventory": {
+        "O+": {"units_available": 3, "expiry_date": "2026-07-30", "reserved_count": 0},
+        "B+": {"units_available": 2, "expiry_date": "2026-09-08", "reserved_count": 0}
+      }
+    }
+  ],
+  "donors": [
+    {"donor_id": "d01", "name": "Ravi Kumar", "blood_group": "O+", "phone": "+91 98765-00001", "language": "Hindi", "location": "Hyderabad", "latitude": 17.395, "longitude": 78.490, "last_donation_date": "2025-12-15", "total_donations": 12, "total_calls": 15, "calls_to_donations_ratio": 0.80, "eligibility_status": "eligible"},
+    {"donor_id": "d02", "name": "Suresh M", "blood_group": "O+", "phone": "+91 98765-00002", "language": "Telugu", "location": "Hyderabad", "latitude": 17.405, "longitude": 78.510, "last_donation_date": "2025-11-20", "total_donations": 8, "total_calls": 10, "calls_to_donations_ratio": 0.80, "eligibility_status": "eligible"},
+    {"donor_id": "d03", "name": "Priya Sharma", "blood_group": "O+", "phone": "+91 98765-00003", "language": "Hindi", "location": "Hyderabad", "latitude": 17.420, "longitude": 78.450, "last_donation_date": "2026-01-10", "total_donations": 5, "total_calls": 8, "calls_to_donations_ratio": 0.63, "eligibility_status": "eligible"},
+    {"donor_id": "d04", "name": "Amit Reddy", "blood_group": "O+", "phone": "+91 98765-00004", "language": "Telugu", "location": "Secunderabad", "latitude": 17.440, "longitude": 78.500, "last_donation_date": "2025-10-05", "total_donations": 15, "total_calls": 18, "calls_to_donations_ratio": 0.83, "eligibility_status": "eligible"},
+    {"donor_id": "d05", "name": "Deepa V", "blood_group": "O+", "phone": "+91 98765-00005", "language": "Hindi", "location": "Hyderabad", "latitude": 17.370, "longitude": 78.520, "last_donation_date": "2026-02-01", "total_donations": 3, "total_calls": 7, "calls_to_donations_ratio": 0.43, "eligibility_status": "eligible"},
+    {"donor_id": "d06", "name": "Kiran P", "blood_group": "O+", "phone": "+91 98765-00006", "language": "Telugu", "location": "Hyderabad", "latitude": 17.360, "longitude": 78.470, "last_donation_date": "2025-09-15", "total_donations": 20, "total_calls": 22, "calls_to_donations_ratio": 0.91, "eligibility_status": "eligible"},
+    {"donor_id": "d07", "name": "Lakshmi N", "blood_group": "O+", "phone": "+91 98765-00007", "language": "Tamil", "location": "Hyderabad", "latitude": 17.450, "longitude": 78.440, "last_donation_date": "2026-01-20", "total_donations": 6, "total_calls": 10, "calls_to_donations_ratio": 0.60, "eligibility_status": "eligible"},
+    {"donor_id": "d08", "name": "Manoj S", "blood_group": "O+", "phone": "+91 98765-00008", "language": "Hindi", "location": "Warangal", "latitude": 17.970, "longitude": 79.590, "last_donation_date": "2025-12-01", "total_donations": 9, "total_calls": 12, "calls_to_donations_ratio": 0.75, "eligibility_status": "eligible"},
+    {"donor_id": "d09", "name": "Neha G", "blood_group": "O+", "phone": "+91 98765-00009", "language": "Telugu", "location": "Hyderabad", "latitude": 17.410, "longitude": 78.530, "last_donation_date": "2025-11-10", "total_donations": 7, "total_calls": 9, "calls_to_donations_ratio": 0.78, "eligibility_status": "eligible"},
+    {"donor_id": "d10", "name": "Omar F", "blood_group": "O+", "phone": "+91 98765-00010", "language": "Hindi", "location": "Hyderabad", "latitude": 17.380, "longitude": 78.460, "last_donation_date": "2026-02-10", "total_donations": 4, "total_calls": 8, "calls_to_donations_ratio": 0.50, "eligibility_status": "eligible"},
+    {"donor_id": "d11", "name": "Padma R", "blood_group": "O+", "phone": "+91 98765-00011", "language": "Telugu", "location": "Secunderabad", "latitude": 17.435, "longitude": 78.505, "last_donation_date": "2025-10-20", "total_donations": 11, "total_calls": 14, "calls_to_donations_ratio": 0.79, "eligibility_status": "eligible"},
+    {"donor_id": "d12", "name": "Raj T", "blood_group": "O+", "phone": "+91 98765-00012", "language": "Tamil", "location": "Hyderabad", "latitude": 17.350, "longitude": 78.480, "last_donation_date": "2025-12-25", "total_donations": 2, "total_calls": 5, "calls_to_donations_ratio": 0.40, "eligibility_status": "eligible"},
+    {"donor_id": "d13", "name": "Sita K", "blood_group": "O+", "phone": "+91 98765-00013", "language": "Hindi", "location": "Hyderabad", "latitude": 17.400, "longitude": 78.540, "last_donation_date": "2026-01-05", "total_donations": 10, "total_calls": 13, "calls_to_donations_ratio": 0.77, "eligibility_status": "eligible"},
+    {"donor_id": "d14", "name": "Tariq A", "blood_group": "O+", "phone": "+91 98765-00014", "language": "Hindi", "location": "Hyderabad", "latitude": 17.375, "longitude": 78.445, "last_donation_date": "2025-11-30", "total_donations": 6, "total_calls": 8, "calls_to_donations_ratio": 0.75, "eligibility_status": "eligible"},
+    {"donor_id": "d15", "name": "Uma D", "blood_group": "O+", "phone": "+91 98765-00015", "language": "Telugu", "location": "Warangal", "latitude": 17.980, "longitude": 79.600, "last_donation_date": "2025-09-25", "total_donations": 14, "total_calls": 16, "calls_to_donations_ratio": 0.88, "eligibility_status": "eligible"},
+    {"donor_id": "d16", "name": "Vikram J", "blood_group": "O+", "phone": "+91 98765-00016", "language": "Hindi", "location": "Hyderabad", "latitude": 17.425, "longitude": 78.515, "last_donation_date": "2026-02-05", "total_donations": 3, "total_calls": 6, "calls_to_donations_ratio": 0.50, "eligibility_status": "eligible"},
+    {"donor_id": "d17", "name": "Waseem K", "blood_group": "O+", "phone": "+91 98765-00017", "language": "Hindi", "location": "Hyderabad", "latitude": 17.390, "longitude": 78.475, "last_donation_date": "2025-10-15", "total_donations": 8, "total_calls": 11, "calls_to_donations_ratio": 0.73, "eligibility_status": "eligible"},
+    {"donor_id": "d18", "name": "Xena L", "blood_group": "O+", "phone": "+91 98765-00018", "language": "Telugu", "location": "Secunderabad", "latitude": 17.445, "longitude": 78.495, "last_donation_date": "2025-12-20", "total_donations": 5, "total_calls": 9, "calls_to_donations_ratio": 0.56, "eligibility_status": "eligible"},
+    {"donor_id": "d19", "name": "Yash B", "blood_group": "O+", "phone": "+91 98765-00019", "language": "Marathi", "location": "Hyderabad", "latitude": 17.355, "longitude": 78.505, "last_donation_date": "2026-01-15", "total_donations": 4, "total_calls": 7, "calls_to_donations_ratio": 0.57, "eligibility_status": "eligible"},
+    {"donor_id": "d20", "name": "Zara M", "blood_group": "O+", "phone": "+91 98765-00020", "language": "Hindi", "location": "Hyderabad", "latitude": 17.415, "longitude": 78.465, "last_donation_date": "2025-11-05", "total_donations": 7, "total_calls": 10, "calls_to_donations_ratio": 0.70, "eligibility_status": "eligible"}
+  ],
+  "patients": [
+    {"patient_id": "p001", "name": "Kavya Reddy", "age": 8, "blood_group": "O+", "location": "Hyderabad", "latitude": 17.385, "longitude": 78.4867, "last_transfusion_date": "2026-05-18", "cycle_length_days": 21, "hb_level": 6.8, "ferritin_level": 12, "mcv_level": 62, "urgency_window_days": 3, "created_at": "2026-06-01"},
+    {"patient_id": "p002", "name": "Rahul Kumar", "age": 12, "blood_group": "B+", "location": "Warangal", "latitude": 17.9689, "longitude": 79.5941, "last_transfusion_date": "2026-05-10", "cycle_length_days": 28, "hb_level": 9.2, "ferritin_level": 45, "mcv_level": 78, "urgency_window_days": 12, "created_at": "2026-05-28"},
+    {"patient_id": "p003", "name": "Arjun S", "age": 10, "blood_group": "O-", "location": "Secunderabad", "latitude": 17.4399, "longitude": 78.4983, "last_transfusion_date": "2026-05-28", "cycle_length_days": 14, "hb_level": 5.9, "ferritin_level": 8, "mcv_level": 55, "urgency_window_days": 2, "created_at": "2026-06-03"},
+    {"patient_id": "p004", "name": "Priya Nair", "age": 6, "blood_group": "A+", "location": "Hyderabad", "latitude": 17.375, "longitude": 78.480, "last_transfusion_date": "2026-05-23", "cycle_length_days": 21, "hb_level": 8.5, "ferritin_level": 30, "mcv_level": 70, "urgency_window_days": 8, "created_at": "2026-06-02"},
+    {"patient_id": "p005", "name": "Sneha P", "age": 15, "blood_group": "AB+", "location": "Hyderabad", "latitude": 17.395, "longitude": 78.490, "last_transfusion_date": "2026-05-15", "cycle_length_days": 28, "hb_level": 10.1, "ferritin_level": 55, "mcv_level": 85, "urgency_window_days": 15, "created_at": "2026-05-30"}
+  ]
+}
