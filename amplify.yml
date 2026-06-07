@@ -16,3 +16,6 @@ applications:
       cache:
         paths:
           - node_modules/**/*
+    environment:
+      variables:
+        NEXT_PUBLIC_API_URL: 'http://13.48.23.104:8000'

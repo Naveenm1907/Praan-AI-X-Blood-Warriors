@@ -40,6 +40,8 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:3001",
         "http://127.0.0.1:3001",
+        "https://*.amplifyapp.com",  # Amplify frontend
+        "http://13.48.23.104:3000",  # If running frontend on EC2
     ],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
