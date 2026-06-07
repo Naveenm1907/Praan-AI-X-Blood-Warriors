@@ -5,7 +5,6 @@ from database import Base
 class Patient(Base):
     __tablename__ = "patients"
 
-<<<<<<< HEAD
     # Basic info
     id = Column(Integer, primary_key=True, index=True)
     patient_code = Column(String(20), nullable=True, index=True)
@@ -55,7 +54,6 @@ class Patient(Base):
     urgency_level = Column(String(50), nullable=True, index=True)
     days_until_transfusion = Column(Integer, nullable=True)
     next_transfusion_date = Column(String(20), nullable=True)
-=======
     # ── Basic info ────────────────────────────────────────────────────────────
     id         = Column(Integer, primary_key=True, index=True)
     name       = Column(String, nullable=False)
@@ -103,7 +101,7 @@ class Patient(Base):
     urgency_level            = Column(String(50), nullable=True)
     days_until_transfusion   = Column(Integer, nullable=True)
     next_transfusion_date    = Column(String(20), nullable=True)
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
+
 
     # ── OCR metadata ─────────────────────────────────────────────────────────
     ocr_text       = Column(Text, nullable=True)
@@ -116,7 +114,6 @@ class Patient(Base):
 
     def to_dict(self):
         return {
-<<<<<<< HEAD
             "id": self.id,
             "patient_code": self.patient_code,
             "name": self.name,
@@ -153,7 +150,6 @@ class Patient(Base):
             "severity": self.severity,
             "severity_score": self.severity_score,
             "urgency_level": self.urgency_level,
-=======
             "id":           self.id,
             "name":         self.name,
             "age":          self.age,
@@ -192,7 +188,6 @@ class Patient(Base):
             "severity":               self.severity,
             "severity_score":         self.severity_score,
             "urgency_level":          self.urgency_level,
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
             "days_until_transfusion": self.days_until_transfusion,
             "next_transfusion_date":  self.next_transfusion_date,
 

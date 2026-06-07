@@ -35,11 +35,8 @@ def get_db():
 def init_db():
     """Initialize database tables."""
     # Import models to register them with Base
-<<<<<<< HEAD:backend/database/__init__.py
     from models import patient, task, workflow
-=======
     from models import patient  # noqa: F401
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b:backend/database.py
     Base.metadata.create_all(bind=engine)
 
 

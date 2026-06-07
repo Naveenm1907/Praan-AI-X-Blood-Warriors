@@ -79,8 +79,6 @@ class PatientUpdate(BaseModel):
 
 
 class PatientResponse(BaseModel):
-    """Schema for patient response"""
-<<<<<<< HEAD
     id: int
     name: str
     age: int
@@ -96,7 +94,7 @@ class PatientResponse(BaseModel):
     mchc_level: Optional[float]
     rbc_count: Optional[float]
     wbc_count: Optional[float]
-=======
+
     id:           int
     name:         str
     age:          int
@@ -115,7 +113,6 @@ class PatientResponse(BaseModel):
     mchc_level:     Optional[float]
     rbc_count:      Optional[float]
     wbc_count:      Optional[float]
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
     platelet_count: Optional[float]
     ferritin_level: Optional[float]
     rdw_pct:        Optional[float]

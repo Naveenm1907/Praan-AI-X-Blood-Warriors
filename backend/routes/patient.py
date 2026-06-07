@@ -52,17 +52,14 @@ def _patient_to_params(patient) -> dict:
 
 
 def _run_severity_classification(patient):
-<<<<<<< HEAD
-    """Run severity classification and transfusion prediction using Lambda API"""
-=======
-    """Run severity classification and transfusion prediction on a patient."""
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
+
+
     params = _patient_to_params(patient)
 
     # Classify severity using Lambda API
     result = classify_severity_lambda(params)
 
-<<<<<<< HEAD
+
     # Use ML severity if available, otherwise rule-based
     if result.get('ml_severity'):
         patient.severity = result['ml_severity']
@@ -70,7 +67,6 @@ def _run_severity_classification(patient):
     else:
         patient.severity = result.get('rule_severity', 'Mild')
         patient.severity_score = 0.5
-=======
     patient.severity = result.get('consensus_severity', result['rule_severity'])
     patient.severity_score = result.get('confidence', 0.5) if result['ml_severity'] else 0.5
 
@@ -79,7 +75,7 @@ def _run_severity_classification(patient):
         patient.days_until_transfusion = None
         patient.next_transfusion_date = None
         return
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
+
 
     # Predict transfusion date using Lambda API
     try:
@@ -334,7 +330,7 @@ async def upload_medical_report(
             if value is not None:
                 setattr(patient, attr, value)
 
-<<<<<<< HEAD
+
         # Check if we have any blood parameters before classification
         has_params = any([
             patient.hb_level,
@@ -352,10 +348,10 @@ async def upload_medical_report(
             patient.severity = "Unknown"
             patient.urgency_level = "SCHEDULED"
             patient.days_until_transfusion = patient.transfusion_interval_days or 28
-=======
+
         # Classify severity + predict transfusion date
         _run_severity_classification(patient)
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
+
 
         db.commit()
         db.refresh(patient)
@@ -423,47 +419,37 @@ def update_transfusion_info(
 
 @router.get("/patients/{patient_id}/analysis")
 def get_patient_analysis(patient_id: int, db: Session = Depends(get_db)):
-<<<<<<< HEAD
-    """
-    Get detailed analysis for a patient including severity breakdown
-    Uses Lambda API for ML predictions
-    """
-=======
-    """Get detailed analysis for a patient including severity breakdown"""
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
+
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
 
     params = _patient_to_params(patient)
 
-<<<<<<< HEAD
+
     # Get severity classification with probabilities using Lambda API
     result = classify_severity_lambda(params)
 
     # Get transfusion prediction using Lambda API
     days = predict_transfusion_date_lambda(params)
-=======
+
     result = classify_severity(params, use_ml=True)
     days = predict_transfusion_date(params)
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
+
 
     return {
         "patient": patient.to_dict(),
         "analysis": {
-<<<<<<< HEAD
             "rule_severity": result.get('rule_severity'),
             "ml_severity": result.get('ml_severity'),
             "confidence": result.get('confidence'),
             "probabilities": result.get('probabilities', {}),
             "method": result.get('method'),
-=======
             "rule_severity":  result['rule_severity'],
             "ml_severity":    result['ml_severity'],
             "confidence":     result['confidence'],
             "probabilities":  result.get('probabilities', {}),
             "method":         result['method'],
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
         },
         "transfusion_days": days,
     }
