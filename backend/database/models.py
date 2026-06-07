@@ -2,7 +2,7 @@
 SQLAlchemy database models for PRAAN AI
 """
 
-from sqlalchemy import Column, String, Integer, Float, DateTime, Text, Boolean, ForeignKey, JSON
+from sqlalchemy import Column, String, Integer, Float, DateTime, Text, Boolean, ForeignKey, JSON, Date, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
@@ -143,45 +143,70 @@ class MedicalReport(Base):
 class Donor(Base):
     __tablename__ = "donors"
 
-    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    name = Column(String(255), nullable=False)
-    age = Column(Integer, nullable=False)
-    gender = Column(String(50), nullable=False)
-    blood_group = Column(String(10), nullable=False)
-    phone = Column(String(20), nullable=False)
-    location = Column(String(255), nullable=False)
-    is_active = Column(Boolean, default=True)
-    last_donation_date = Column(String(20), nullable=True)
-    donation_count = Column(Integer, default=0)
-    preferred_contact_method = Column(String(50), default="whatsapp")  # whatsapp, call, sms
-    preferred_time = Column(String(50), nullable=True)  # e.g., "morning", "evening"
-    languages = Column(String(255), default="English")  # comma-separated
-    latitude = Column(Float, nullable=True)
-    longitude = Column(Float, nullable=True)
-
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(String(255), nullable=True, index=True)
+    bridge_id = Column(String(255), nullable=True)
+    role = Column(String(255), nullable=True)
+    role_status = Column(Boolean, nullable=True)
+    bridge_status = Column(Boolean, nullable=True)
+    blood_group = Column(String(10), nullable=True)
+    gender = Column(String(50), nullable=True)
+    phone = Column(String(20), nullable=True)
+    latitude = Column(Numeric(10, 6), nullable=True)
+    longitude = Column(Numeric(10, 6), nullable=True)
+    donor_type = Column(String(255), nullable=True)
+    last_contacted_date = Column(Date, nullable=True)
+    last_donation_date = Column(Date, nullable=True)
+    next_eligible_date = Column(Date, nullable=True)
+    donations_till_date = Column(Integer, nullable=True)
+    eligibility_status = Column(String(50), nullable=True)
+    cycle_of_donations = Column(Integer, nullable=True)
+    total_calls = Column(Integer, nullable=True)
+    frequency_in_days = Column(Integer, nullable=True)
+    status_of_bridge = Column(Boolean, nullable=True)
+    status = Column(String(50), nullable=True)
+    donated_earlier = Column(Boolean, nullable=True)
+    last_bridge_donation_date = Column(Date, nullable=True)
+    calls_to_donations_ratio = Column(Numeric(10, 4), nullable=True)
+    user_donation_active_status = Column(String(50), nullable=True)
+    inactive_trigger_comment = Column(Text, nullable=True)
+    registration_date = Column(DateTime, nullable=True)
+    created_at = Column(DateTime(timezone=True), nullable=True)
+    updated_at = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
-    transfusion_requests = relationship("TransfusionRequest", back_populates="donor")
+    transfusion_requests = relationship("TransfusionRequest", back_populates="donor", cascade="all, delete-orphan")
 
     def to_dict(self):
         return {
             "id": self.id,
-            "name": self.name,
-            "age": self.age,
-            "gender": self.gender,
+            "user_id": self.user_id,
+            "bridge_id": self.bridge_id,
+            "role": self.role,
+            "role_status": self.role_status,
+            "bridge_status": self.bridge_status,
             "blood_group": self.blood_group,
+            "gender": self.gender,
             "phone": self.phone,
-            "location": self.location,
-            "is_active": self.is_active,
-            "last_donation_date": self.last_donation_date,
-            "donation_count": self.donation_count,
-            "preferred_contact_method": self.preferred_contact_method,
-            "preferred_time": self.preferred_time,
-            "languages": self.languages,
-            "latitude": self.latitude,
-            "longitude": self.longitude,
+            "latitude": float(self.latitude) if self.latitude else None,
+            "longitude": float(self.longitude) if self.longitude else None,
+            "donor_type": self.donor_type,
+            "last_contacted_date": self.last_contacted_date.isoformat() if self.last_contacted_date else None,
+            "last_donation_date": self.last_donation_date.isoformat() if self.last_donation_date else None,
+            "next_eligible_date": self.next_eligible_date.isoformat() if self.next_eligible_date else None,
+            "donations_till_date": self.donations_till_date,
+            "eligibility_status": self.eligibility_status,
+            "cycle_of_donations": self.cycle_of_donations,
+            "total_calls": self.total_calls,
+            "frequency_in_days": self.frequency_in_days,
+            "status_of_bridge": self.status_of_bridge,
+            "status": self.status,
+            "donated_earlier": self.donated_earlier,
+            "last_bridge_donation_date": self.last_bridge_donation_date.isoformat() if self.last_bridge_donation_date else None,
+            "calls_to_donations_ratio": float(self.calls_to_donations_ratio) if self.calls_to_donations_ratio else None,
+            "user_donation_active_status": self.user_donation_active_status,
+            "inactive_trigger_comment": self.inactive_trigger_comment,
+            "registration_date": self.registration_date.isoformat() if self.registration_date else None,
             "created_at": self.created_at.isoformat() if self.created_at else None,
             "updated_at": self.updated_at.isoformat() if self.updated_at else None,
         }
@@ -192,7 +217,7 @@ class TransfusionRequest(Base):
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     patient_id = Column(String, ForeignKey("patients.id"), nullable=False)
-    donor_id = Column(String, ForeignKey("donors.id"), nullable=False)
+    donor_id = Column(Integer, ForeignKey("donors.id"), nullable=False)
     blood_bank_id = Column(String, nullable=True)
     status = Column(String(50), default="pending")  # pending, matched, contacted, confirmed, completed, cancelled
     units_required = Column(Integer, default=1)

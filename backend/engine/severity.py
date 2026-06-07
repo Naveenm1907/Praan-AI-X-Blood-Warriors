@@ -23,6 +23,11 @@ logger = logging.getLogger(__name__)
 
 MODEL_DIR = Path(__file__).parent / "models"
 DATASET_PATH = Path(__file__).parent.parent / "thalassemia_transfusion_10k.csv"
+DATASET_CACHE = '/tmp/thalassemia_transfusion_10k.csv'
+
+# S3 config for Lambda deployment
+S3_BUCKET = os.getenv('S3_BUCKET', 'praanai')
+S3_DATASET_KEY = os.getenv('S3_DATASET_KEY', 'thalassemia_transfusion_10k.csv')
 
 SEVERITY_ORDER = ['No Thalassemia', 'Mild', 'Moderate', 'Moderate-Severe', 'Severe']
 SEV_MAP = {s: i for i, s in enumerate(SEVERITY_ORDER)}
@@ -31,9 +36,29 @@ SEV_MAP = {s: i for i, s in enumerate(SEVERITY_ORDER)}
 _models: Optional[Dict] = None
 
 
+def _get_dataset_path() -> str:
+    """Get dataset path - local file or download from S3"""
+    if DATASET_PATH.exists():
+        return str(DATASET_PATH)
+
+    # Lambda environment: download from S3
+    try:
+        import boto3
+        cache = Path(DATASET_CACHE)
+        if not cache.exists():
+            logger.info(f"Downloading dataset from s3://{S3_BUCKET}/{S3_DATASET_KEY}")
+            s3 = boto3.client('s3')
+            s3.download_file(S3_BUCKET, S3_DATASET_KEY, str(cache))
+        return str(cache)
+    except Exception as e:
+        logger.error(f"Failed to download dataset from S3: {e}")
+        raise
+
+
 def _load_dataset() -> pd.DataFrame:
     """Load and preprocess the dataset"""
-    df = pd.read_csv(DATASET_PATH)
+    dataset_path = _get_dataset_path()
+    df = pd.read_csv(dataset_path)
     df['severity_code'] = df['severity'].map(SEV_MAP)
 
     # Encode categorical columns
@@ -193,12 +218,30 @@ def load_models() -> Dict:
         return _models
 
     model_path = MODEL_DIR / "trained_models.pkl"
+
+    # Try local file first
     if model_path.exists():
         with open(model_path, 'rb') as f:
             _models = pickle.load(f)
         logger.info("Loaded trained models from disk")
         return _models
 
+    # Lambda environment: try downloading from S3
+    try:
+        import boto3
+        cache_path = Path('/tmp/trained_models.pkl')
+        if not cache_path.exists():
+            logger.info(f"Downloading model from s3://{S3_BUCKET}/trained_models.pkl")
+            s3 = boto3.client('s3')
+            s3.download_file(S3_BUCKET, 'trained_models.pkl', str(cache_path))
+        with open(cache_path, 'rb') as f:
+            _models = pickle.load(f)
+        logger.info("Loaded trained models from S3 cache")
+        return _models
+    except Exception as e:
+        logger.warning(f"Failed to download from S3: {e}")
+
+    # Fall back to training
     logger.info("No saved models found, training...")
     _models = train_models()
     return _models

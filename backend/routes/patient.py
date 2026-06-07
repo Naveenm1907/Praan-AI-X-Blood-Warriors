@@ -14,7 +14,8 @@ from schemas.patient import (
     PatientResponse,
     MedicalReportUpload,
 )
-from engine.severity import rule_severity, ml_severity, classify_severity, predict_transfusion_date
+from engine.severity import rule_severity
+from engine.lambda_client import classify_severity_lambda, predict_transfusion_date_lambda
 from engine.ocr_parser import OCRParser
 
 logger = logging.getLogger(__name__)
@@ -37,23 +38,23 @@ def _patient_to_params(patient) -> dict:
 
 
 def _run_severity_classification(patient):
-    """Run severity classification and transfusion prediction on a patient"""
+    """Run severity classification and transfusion prediction using Lambda API"""
     params = _patient_to_params(patient)
 
-    # Classify severity (rule-based + ML)
-    result = classify_severity(params, use_ml=True)
+    # Classify severity using Lambda API
+    result = classify_severity_lambda(params)
 
     # Use ML severity if available, otherwise rule-based
-    if result['ml_severity']:
+    if result.get('ml_severity'):
         patient.severity = result['ml_severity']
         patient.severity_score = result.get('confidence', 0.5)
     else:
-        patient.severity = result['rule_severity']
+        patient.severity = result.get('rule_severity', 'Mild')
         patient.severity_score = 0.5
 
-    # Predict transfusion date
+    # Predict transfusion date using Lambda API
     try:
-        days = predict_transfusion_date(params)
+        days = predict_transfusion_date_lambda(params)
         if days is not None:
             patient.days_until_transfusion = days
             # Calculate next transfusion date
@@ -121,6 +122,14 @@ def create_patient(patient_data: PatientCreate, db: Session = Depends(get_db)):
         db.add(patient)
         db.commit()
         db.refresh(patient)
+
+        # Auto-create workflow for URGENT/CRITICAL patients
+        if patient.urgency_level in ("URGENT", "CRITICAL"):
+            try:
+                from routes.workflow import create_workflow_for_patient
+                create_workflow_for_patient(patient, db)
+            except Exception as e:
+                logger.warning(f"Auto-workflow creation failed: {e}")
 
         logger.info(f"Patient created: {patient.id} - {patient.name}")
         return patient.to_dict()
@@ -280,8 +289,23 @@ async def upload_medical_report(
         if hb_f is not None:
             patient.hb_f = hb_f
 
-        # Classify severity
-        _run_severity_classification(patient)
+        # Check if we have any blood parameters before classification
+        has_params = any([
+            patient.hb_level,
+            patient.mcv_level,
+            patient.ferritin_level,
+            patient.hb_a2
+        ])
+
+        if has_params:
+            # Classify severity using Lambda
+            _run_severity_classification(patient)
+        else:
+            # No parameters - use fallback
+            logger.warning("No blood parameters available for classification, using fallback")
+            patient.severity = "Unknown"
+            patient.urgency_level = "SCHEDULED"
+            patient.days_until_transfusion = patient.transfusion_interval_days or 28
 
         db.commit()
         db.refresh(patient)
@@ -305,6 +329,7 @@ async def upload_medical_report(
 def get_patient_analysis(patient_id: int, db: Session = Depends(get_db)):
     """
     Get detailed analysis for a patient including severity breakdown
+    Uses Lambda API for ML predictions
     """
     patient = db.query(Patient).filter(Patient.id == patient_id).first()
     if not patient:
@@ -312,20 +337,20 @@ def get_patient_analysis(patient_id: int, db: Session = Depends(get_db)):
 
     params = _patient_to_params(patient)
 
-    # Get severity classification with probabilities
-    result = classify_severity(params, use_ml=True)
+    # Get severity classification with probabilities using Lambda API
+    result = classify_severity_lambda(params)
 
-    # Get transfusion prediction
-    days = predict_transfusion_date(params)
+    # Get transfusion prediction using Lambda API
+    days = predict_transfusion_date_lambda(params)
 
     return {
         "patient": patient.to_dict(),
         "analysis": {
-            "rule_severity": result['rule_severity'],
-            "ml_severity": result['ml_severity'],
-            "confidence": result['confidence'],
+            "rule_severity": result.get('rule_severity'),
+            "ml_severity": result.get('ml_severity'),
+            "confidence": result.get('confidence'),
             "probabilities": result.get('probabilities', {}),
-            "method": result['method'],
+            "method": result.get('method'),
         },
         "transfusion_days": days,
     }

@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from database import init_db
-from routes import patient, blood_bank, donor, voice, workflow
+from routes import patient, blood_bank, donor, voice, workflow, agent, tasks, whatsapp
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -29,7 +29,8 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="PRAAN AI API",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    redirect_slashes=False,
 )
 
 app.add_middleware(
@@ -45,6 +46,9 @@ app.include_router(blood_bank.router, prefix="/api/blood-bank", tags=["blood-ban
 app.include_router(donor.router, prefix="/api/donor", tags=["donor"])
 app.include_router(voice.router, prefix="/api/voice", tags=["voice"])
 app.include_router(workflow.router, prefix="/api/workflow", tags=["workflow"])
+app.include_router(agent.router, prefix="/api/agent", tags=["agent"])
+app.include_router(tasks.router, prefix="/api/tasks", tags=["tasks"])
+app.include_router(whatsapp.router, tags=["whatsapp"])
 
 
 @app.get("/")

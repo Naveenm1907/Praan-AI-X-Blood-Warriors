@@ -25,12 +25,12 @@ def save_banks(banks):
         json.dump(data, f, indent=2)
 
 
-@router.get("/blood-bank")
+@router.get("")
 def list_inventory():
     return load_banks()
 
 
-@router.get("/blood-bank/search")
+@router.get("/search")
 def search_inventory(
     blood_group: str = Query(...),
     district: str | None = Query(None),
@@ -39,7 +39,7 @@ def search_inventory(
     return search_blood_banks(banks, blood_group, district)
 
 
-@router.post("/blood-bank/reserve")
+@router.post("/reserve")
 def reserve_blood(req: ReserveRequest):
     banks = load_banks()
     result = reserve_units(banks, req.bank_id, req.blood_group, req.units)
@@ -48,12 +48,12 @@ def reserve_blood(req: ReserveRequest):
     return result or {"error": "Insufficient stock"}
 
 
-@router.get("/blood-bank/expiry")
+@router.get("/expiry")
 def get_expiry_alerts(days: int = Query(7)):
     banks = load_banks()
     return get_expiring_stock(banks, days)
 
 
-@router.post("/blood-bank/seed")
+@router.post("/seed")
 def seed_data():
     return {"message": "Blood bank data loaded", "count": len(load_banks())}

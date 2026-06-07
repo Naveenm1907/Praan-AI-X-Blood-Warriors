@@ -1,88 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import type { BloodGroup, BloodBank } from "@/lib/types";
 import { BLOOD_GROUPS, BLOOD_GROUP_COLORS } from "@/lib/types";
 import { Badge } from "@/components/Badge";
 import { Card } from "@/components/Card";
 import { Warning } from "@phosphor-icons/react";
-
-const mockBloodBanks: BloodBank[] = [
-  {
-    bank_id: "bb001", name: "Apollo Blood Bank", district: "Hyderabad", state: "Telangana",
-    contact_phone: "+91 40-2345-6789",
-    inventory: {
-      "O+": { units_available: 5, expiry_date: "2026-10-15", reserved_count: 1 },
-      "A+": { units_available: 3, expiry_date: "2026-09-28", reserved_count: 0 },
-      "B+": { units_available: 2, expiry_date: "2026-06-12", reserved_count: 0 },
-    },
-  },
-  {
-    bank_id: "bb002", name: "NIMS Blood Centre", district: "Hyderabad", state: "Telangana",
-    contact_phone: "+91 40-2348-9012",
-    inventory: {
-      "B+": { units_available: 4, expiry_date: "2026-09-20", reserved_count: 0 },
-      "O-": { units_available: 1, expiry_date: "2026-07-15", reserved_count: 0 },
-      "A+": { units_available: 2, expiry_date: "2026-08-30", reserved_count: 1 },
-    },
-  },
-  {
-    bank_id: "bb003", name: "Indian Red Cross Blood Bank", district: "Secunderabad", state: "Telangana",
-    contact_phone: "+91 40-2789-0123",
-    inventory: {
-      "AB+": { units_available: 2, expiry_date: "2026-10-02", reserved_count: 0 },
-      "O+": { units_available: 3, expiry_date: "2026-09-15", reserved_count: 0 },
-    },
-  },
-  {
-    bank_id: "bb004", name: "Yashoda Blood Bank", district: "Hyderabad", state: "Telangana",
-    contact_phone: "+91 40-4567-8901",
-    inventory: {
-      "A+": { units_available: 6, expiry_date: "2026-10-20", reserved_count: 2 },
-      "O+": { units_available: 4, expiry_date: "2026-09-10", reserved_count: 0 },
-      "B-": { units_available: 1, expiry_date: "2026-06-09", reserved_count: 0 },
-    },
-  },
-  {
-    bank_id: "bb005", name: "KIMS Blood Centre", district: "Warangal", state: "Telangana",
-    contact_phone: "+91 870-234-5678",
-    inventory: {
-      "O+": { units_available: 2, expiry_date: "2026-08-25", reserved_count: 0 },
-      "B+": { units_available: 3, expiry_date: "2026-09-05", reserved_count: 0 },
-      "A-": { units_available: 1, expiry_date: "2026-07-20", reserved_count: 0 },
-    },
-  },
-  {
-    bank_id: "bb006", name: "Care Hospital Blood Bank", district: "Hyderabad", state: "Telangana",
-    contact_phone: "+91 40-3456-7890",
-    inventory: {
-      "O+": { units_available: 7, expiry_date: "2026-11-01", reserved_count: 0 },
-      "O-": { units_available: 2, expiry_date: "2026-08-15", reserved_count: 1 },
-      "AB+": { units_available: 3, expiry_date: "2026-09-30", reserved_count: 0 },
-    },
-  },
-  {
-    bank_id: "bb007", name: "Continental Blood Centre", district: "Hyderabad", state: "Telangana",
-    contact_phone: "+91 40-6789-0123",
-    inventory: {
-      "B+": { units_available: 5, expiry_date: "2026-10-10", reserved_count: 0 },
-      "A+": { units_available: 4, expiry_date: "2026-09-22", reserved_count: 0 },
-      "AB-": { units_available: 1, expiry_date: "2026-07-05", reserved_count: 0 },
-    },
-  },
-  {
-    bank_id: "bb008", name: "Rainbow Children Blood Bank", district: "Hyderabad", state: "Telangana",
-    contact_phone: "+91 40-2345-0000",
-    inventory: {
-      "O+": { units_available: 3, expiry_date: "2026-08-18", reserved_count: 0 },
-      "A+": { units_available: 2, expiry_date: "2026-09-12", reserved_count: 0 },
-      "B+": { units_available: 1, expiry_date: "2026-06-15", reserved_count: 0 },
-    },
-  },
-];
+import { api } from "@/lib/api";
 
 function getDaysUntilExpiry(dateStr: string) {
-  const now = new Date("2026-06-06");
+  const now = new Date();
   const expiry = new Date(dateStr);
   return Math.ceil((expiry.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 }
@@ -98,50 +26,114 @@ function getTotalsByGroup(banks: BloodBank[]) {
 }
 
 export default function BloodBankPage() {
-  const [banks, setBanks] = useState(mockBloodBanks);
-  const [searchGroup, setSearchGroup] = useState<string>("");
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--blood-pink)]"></div>
+      </div>
+    }>
+      <BloodBankContent />
+    </Suspense>
+  );
+}
+
+function BloodBankContent() {
+  const searchParams = useSearchParams();
+  const urlBloodGroup = searchParams.get("blood_group") || "";
+
+  const [banks, setBanks] = useState<BloodBank[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchGroup, setSearchGroup] = useState<string>(urlBloodGroup);
   const [searchDistrict, setSearchDistrict] = useState("");
   const [reserved, setReserved] = useState<Set<string>>(new Set());
+  const [expiryAlerts, setExpiryAlerts] = useState<Array<{bank: string; district: string; group: string; units: number; daysLeft: number}>>([]);
 
   const totals = getTotalsByGroup(banks);
+
+  useEffect(() => {
+    fetchBanks();
+    fetchExpiryAlerts();
+  }, []);
+
+  async function fetchBanks() {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await api.get<BloodBank[]>("/api/blood-bank");
+      setBanks(data);
+    } catch (err) {
+      setError("Failed to load blood bank inventory. Check backend connection.");
+      console.error("Failed to fetch blood banks:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function fetchExpiryAlerts() {
+    try {
+      const alerts = await api.get<Array<{bank: string; district: string; group: string; units: number; daysLeft: number}>>("/api/blood-bank/expiry?days=7");
+      setExpiryAlerts(alerts);
+    } catch (err) {
+      console.error("Failed to fetch expiry alerts:", err);
+    }
+  }
+
+  async function handleSearch() {
+    if (!searchGroup && !searchDistrict) {
+      fetchBanks();
+      return;
+    }
+    try {
+      setLoading(true);
+      const params = new URLSearchParams();
+      if (searchGroup) params.append("blood_group", searchGroup);
+      if (searchDistrict) params.append("district", searchDistrict);
+      const data = await api.get<BloodBank[]>(`/api/blood-bank/search?${params}`);
+      setBanks(data);
+    } catch (err) {
+      console.error("Search failed:", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleReserve(bankId: string, group: string) {
+    const key = `${bankId}-${group}`;
+    if (reserved.has(key)) return;
+
+    try {
+      await api.post("/api/blood-bank/reserve", {
+        bank_id: bankId,
+        blood_group: group,
+        units: 1,
+      });
+      setReserved((prev) => new Set(prev).add(key));
+      setBanks((prev) =>
+        prev.map((bank) => {
+          if (bank.bank_id !== bankId) return bank;
+          const inv = bank.inventory[group];
+          if (!inv || inv.units_available <= 0) return bank;
+          return {
+            ...bank,
+            inventory: {
+              ...bank.inventory,
+              [group]: { ...inv, units_available: inv.units_available - 1, reserved_count: inv.reserved_count + 1 },
+            },
+          };
+        })
+      );
+    } catch (err) {
+      console.error("Reserve failed:", err);
+      alert("Failed to reserve unit. Please try again.");
+    }
+  }
 
   const filteredBanks = banks.filter((bank) => {
     if (searchDistrict && !bank.district.toLowerCase().includes(searchDistrict.toLowerCase())) return false;
     if (searchGroup && !(bank.inventory[searchGroup]?.units_available > 0)) return false;
     return true;
   });
-
-  const handleReserve = (bankId: string, group: string) => {
-    const key = `${bankId}-${group}`;
-    if (reserved.has(key)) return;
-    setReserved((prev) => new Set(prev).add(key));
-    setBanks((prev) =>
-      prev.map((bank) => {
-        if (bank.bank_id !== bankId) return bank;
-        const inv = bank.inventory[group];
-        if (!inv || inv.units_available <= 0) return bank;
-        return {
-          ...bank,
-          inventory: {
-            ...bank.inventory,
-            [group]: { ...inv, units_available: inv.units_available - 1, reserved_count: inv.reserved_count + 1 },
-          },
-        };
-      })
-    );
-  };
-
-  const expiringStock = banks.flatMap((bank) =>
-    Object.entries(bank.inventory)
-      .filter(([, data]) => getDaysUntilExpiry(data.expiry_date) <= 7 && data.units_available > 0)
-      .map(([group, data]) => ({
-        bank: bank.name,
-        district: bank.district,
-        group,
-        units: data.units_available,
-        daysLeft: getDaysUntilExpiry(data.expiry_date),
-      }))
-  );
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-8">
@@ -150,6 +142,33 @@ export default function BloodBankPage() {
         Real-time stock across partner blood banks. Search, reserve, and track expiry.
       </p>
 
+      {/* Loading State */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--blood-pink)] mx-auto mb-4"></div>
+            <p className="text-secondary">Loading inventory...</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && !loading && (
+        <div className="rounded-xl border border-warning/30 bg-warning/5 p-8 text-center">
+          <Warning size={48} weight="regular" className="mx-auto mb-4" style={{ color: "var(--warning)" }} />
+          <p className="text-lg font-semibold text-warning mb-2">{error}</p>
+          <button
+            onClick={fetchBanks}
+            className="mt-4 rounded-lg bg-blood px-6 py-3 text-sm font-semibold text-white hover:brightness-110 transition-all"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* Main Content */}
+      {!loading && !error && (
+        <>
       {/* Totals by Blood Group */}
       <div className="mb-8 grid grid-cols-4 gap-3 sm:grid-cols-8">
         {BLOOD_GROUPS.map((group) => (
@@ -175,15 +194,15 @@ export default function BloodBankPage() {
       </div>
 
       {/* Expiry Alerts */}
-      {expiringStock.length > 0 && (
+      {expiryAlerts.length > 0 && (
         <div className="mb-6 flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/5 p-4">
           <Warning className="mt-0.5 shrink-0" size={20} weight="regular" style={{ color: "var(--warning)" }} />
           <div>
             <p className="text-sm font-semibold font-display text-warning">
-              Expiry Alerts ({expiringStock.length} items expiring within 7 days)
+              Expiry Alerts ({expiryAlerts.length} items expiring within 7 days)
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              {expiringStock.map((item, i) => (
+              {expiryAlerts.map((item, i) => (
                 <span
                   key={i}
                   className="rounded-lg bg-warning/15 px-3 py-1 text-xs text-warning"
@@ -203,11 +222,18 @@ export default function BloodBankPage() {
           placeholder="Search district..."
           value={searchDistrict}
           onChange={(e) => setSearchDistrict(e.target.value)}
+          onKeyPress={(e) => e.key === "Enter" && handleSearch()}
           className="rounded-lg border border-border bg-surface px-4 py-3 text-sm text-primary placeholder-muted focus:border-[var(--border-focus)] focus:ring-2 focus:ring-[var(--border-focus)]/20 focus:outline-none"
         />
+        <button
+          onClick={handleSearch}
+          className="rounded-lg bg-blood px-6 py-3 text-sm font-semibold text-white hover:brightness-110 transition-colors"
+        >
+          Search
+        </button>
         {searchGroup && (
           <button
-            onClick={() => setSearchGroup("")}
+            onClick={() => { setSearchGroup(""); fetchBanks(); }}
             className="rounded-lg border border-border bg-card px-4 py-3 text-sm text-secondary hover:bg-card-hover transition-colors"
           >
             Clear filter: {searchGroup}
@@ -287,6 +313,8 @@ export default function BloodBankPage() {
             Start Voice Call Campaign &rarr;
           </a>
         </Card>
+      )}
+        </>
       )}
     </div>
   );

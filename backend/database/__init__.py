@@ -1,3 +1,4 @@
+"""Database package for PRAAN AI - engine, session, models"""
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -41,5 +42,14 @@ def get_db():
 def init_db():
     """Initialize database tables"""
     # Import models to register them with Base
-    from models import patient
+    from models import patient, task, workflow
     Base.metadata.create_all(bind=engine)
+
+
+# Re-export models for convenience
+from database.models import Patient, MedicalReport, Donor, TransfusionRequest
+
+__all__ = [
+    'engine', 'SessionLocal', 'Base', 'get_db', 'init_db',
+    'Patient', 'MedicalReport', 'Donor', 'TransfusionRequest',
+]
