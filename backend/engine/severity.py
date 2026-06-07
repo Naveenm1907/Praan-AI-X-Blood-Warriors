@@ -65,14 +65,9 @@ def _get_dataset_path() -> str:
 
 
 def _load_dataset() -> pd.DataFrame:
-<<<<<<< HEAD
-    """Load and preprocess the dataset"""
     dataset_path = _get_dataset_path()
     df = pd.read_csv(dataset_path)
-=======
-    """Load and preprocess the dataset — uses actual CSV column names."""
     df = pd.read_csv(DATASET_PATH)
->>>>>>> ca9247ff590eeb5c3f5bc0ea425b7278b5660d8b
     df['severity_code'] = df['severity'].map(SEV_MAP)
 
     # Compute mentzer_index if not present
