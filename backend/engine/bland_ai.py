@@ -7,10 +7,11 @@ import urllib.request
 import urllib.error
 from datetime import datetime
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
-BLAND_API_KEY = "org_64aeaa9ac14e978c9cdcd19b58fa17eb772217f6c7d93b5eaf97ca9571aa30fd86aa0952e126486bda6c69"
+BLAND_API_KEY = os.getenv("BLAND_API_KEY", "")
 
 
 def create_donor_confirmation_call(
