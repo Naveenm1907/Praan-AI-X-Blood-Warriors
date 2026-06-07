@@ -88,17 +88,6 @@ export default function PatientPage() {
     }
   }
 
-  async function startWorkflow(patientId: number) {
-    try {
-      await api.post(`/api/workflow/start-for-patient/${patientId}`);
-      alert("Workflow started! Redirecting to Coordinator...");
-      window.location.href = "/admin/coordinator";
-    } catch (err) {
-      console.error("Failed to start workflow:", err);
-      alert("Failed to start workflow");
-    }
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);

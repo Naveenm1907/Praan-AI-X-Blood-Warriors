@@ -12,7 +12,7 @@ export default function TaskDetail() {
   const router = useRouter();
   const taskId = params.id;
 
-  const [task, setTask] = useState(null);
+  const [task, setTask] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
