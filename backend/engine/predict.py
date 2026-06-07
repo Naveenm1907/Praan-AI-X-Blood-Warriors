@@ -1,3 +1,4 @@
+from typing import Optional
 from datetime import datetime, timedelta
 import math
 
@@ -5,8 +6,8 @@ import math
 def calculate_urgency_window(
     last_transfusion_date: str,
     cycle_length_days: int,
-    hb_level: float | None = None,
-    ferritin_level: float | None = None,
+    hb_level: Optional[float] = None,
+    ferritin_level: Optional[float] = None,
 ) -> dict:
     last_date = datetime.strptime(last_transfusion_date, "%Y-%m-%d")
     next_transfusion = last_date + timedelta(days=cycle_length_days)

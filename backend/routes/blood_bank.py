@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Query
+from typing import Optional
 from models.blood_bank import ReserveRequest
 from engine.inventory import search_blood_banks, reserve_units, get_expiring_stock
 import json
@@ -33,7 +34,7 @@ def list_inventory():
 @router.get("/search")
 def search_inventory(
     blood_group: str = Query(...),
-    district: str | None = Query(None),
+    district: Optional[str] = Query(None),
 ):
     banks = load_banks()
     return search_blood_banks(banks, blood_group, district)
