@@ -22,16 +22,16 @@ DB_NAME = os.getenv("DB_NAME", "postgres")
 DB_USER = os.getenv("DB_USER", "postgres")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "Naveenkusu")
 
-# Build DATABASE_URL with SSL
+# Build DATABASE_URL with SSL (psycopg3 driver)
 if Path(SSL_ROOT_CERT).exists():
     DATABASE_URL = (
-        f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
         f"?sslmode=verify-full&sslrootcert={SSL_ROOT_CERT}"
     )
 else:
     # Fallback: require-ca but no local cert file
     DATABASE_URL = (
-        f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        f"postgresql+psycopg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
         f"?sslmode=require"
     )
 
