@@ -159,7 +159,7 @@ class Patient(Base):
             "location":     self.location,
 
             "last_transfusion_date":     self.last_transfusion_date,
-            "transfusion_interval_days": self.transfusion_interval_days,
+            "transfusion_interval_days": self.transfusion_interval_days or 0,
 
             # CBC / HPLC
             "hb_level":       self.hb_level,

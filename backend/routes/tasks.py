@@ -102,14 +102,34 @@ def get_task_detail(task_id: int, db: Session = Depends(get_db)):
     # Enrich assigned_donors with real phone numbers from database
     assigned_donors = task_dict.get("assigned_donors") or []
     if assigned_donors:
-        donor_ids = [d["donor_id"] for d in assigned_donors]
-        donors = db.query(DonorDB).filter(DonorDB.id.in_(donor_ids)).all()
-        donor_map = {d.id: d for d in donors}
+        # Extract donor user_ids: 'd01' -> 'D001', 'd17' -> 'D017'
+        user_ids = []
+        for d in assigned_donors:
+            donor_id_str = d["donor_id"]
+            # Convert 'd01' to 'D001'
+            if isinstance(donor_id_str, str) and donor_id_str.startswith('d'):
+                user_id = 'D' + donor_id_str[1:].zfill(3)
+                user_ids.append(user_id)
+            else:
+                # Fallback if format different
+                user_ids.append(str(donor_id_str))
+
+        donors = db.query(DonorDB).filter(DonorDB.user_id.in_(user_ids)).all()
+        # Map by user_id
+        donor_map = {d.user_id: d for d in donors}
+
         for donor in assigned_donors:
-            real_donor = donor_map.get(donor["donor_id"])
+            donor_id_str = donor["donor_id"]
+            # Convert to user_id for lookup
+            if isinstance(donor_id_str, str) and donor_id_str.startswith('d'):
+                user_id = 'D' + donor_id_str[1:].zfill(3)
+            else:
+                user_id = str(donor_id_str)
+
+            real_donor = donor_map.get(user_id)
             if real_donor:
                 donor["phone"] = real_donor.phone
-                donor["name"] = real_donor.name
+                donor["name"] = getattr(real_donor, 'name', None) or real_donor.user_id
 
     return task_dict
 

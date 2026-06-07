@@ -104,7 +104,7 @@ class PatientResponse(BaseModel):
     location:     str
 
     last_transfusion_date:     Optional[str]
-    transfusion_interval_days: int
+    transfusion_interval_days: Optional[int]
 
     # CBC / HPLC
     hb_level:       Optional[float]
