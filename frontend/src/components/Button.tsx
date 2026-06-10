@@ -3,10 +3,12 @@
 import { ReactNode } from 'react';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'editorial';
+type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
   children: ReactNode;
   variant?: ButtonVariant;
+  size?: ButtonSize;
   onClick?: () => void;
   className?: string;
   disabled?: boolean;
@@ -15,11 +17,18 @@ interface ButtonProps {
 export function Button({
   children,
   variant = 'primary',
+  size = 'md',
   onClick,
   className = '',
   disabled = false
 }: ButtonProps) {
   const baseStyles = 'relative inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed';
+
+  const sizeStyles = {
+    sm: 'text-xs',
+    md: 'text-sm',
+    lg: 'text-base',
+  };
 
   const variants = {
     primary: `
@@ -58,7 +67,7 @@ export function Button({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${baseStyles} ${variants[variant]} ${className}`}
+      className={`${baseStyles} ${sizeStyles[size]} ${variants[variant]} ${className}`}
     >
       {children}
       {variant === 'editorial' && (

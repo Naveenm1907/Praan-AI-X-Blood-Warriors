@@ -6,10 +6,11 @@ import { Heart } from "@phosphor-icons/react";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/patient", label: "Patient" },
-  { href: "/blood-bank", label: "Blood Bank" },
-  { href: "/donor-outreach", label: "Voice Calls" },
-  { href: "/coordinator", label: "Command Center" },
+  { href: "/patient", label: "Patient App" },
+  { href: "/warrior", label: "Warrior App" },
+  { href: "/admin", label: "Admin Dashboard" },
+  { href: "/admin/coordinator", label: "Coordinator" },
+  { href: "/admin/blood-bank", label: "Blood Bank" },
 ];
 
 export function Navbar() {

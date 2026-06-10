@@ -1,18 +1,59 @@
 export interface Patient {
-  patient_id: string;
+  id: number;
+  patient_code?: string;
   name: string;
   age: number;
+  sex?: string;
+  gender: string;
+  weight_kg?: number;
   blood_group: BloodGroup;
+  phone: string;
   location: string;
-  latitude: number;
-  longitude: number;
-  last_transfusion_date: string;
-  cycle_length_days: number;
+  spleen_enlargement?: string;
+  last_transfusion_date?: string;
+  transfusion_interval_days?: number;
   hb_level?: number;
-  ferritin_level?: number;
+  rbc_count?: number;
   mcv_level?: number;
-  urgency_window_days?: number;
-  created_at: string;
+  mch_level?: number;
+  mchc_level?: number;
+  rdw_pct?: number;
+  ferritin_level?: number;
+  hb_a_pct?: number;
+  hb_a2?: number;
+  hb_f?: number;
+  mentzer_index?: number;
+  wbc_count?: number;
+  platelet_count?: number;
+  hb_post_transfusion?: number;
+  hb_drop_rate_per_day?: number;
+  hb_transfusion_threshold?: number;
+  days_since_last_transfusion?: number;
+  units_per_session?: number;
+  avg_transfusion_interval_days?: number;
+  days_until_next_transfusion?: number;
+  severity?: string;
+  severity_score?: number;
+  urgency_level?: string;
+  days_until_transfusion?: number;
+  next_transfusion_date?: string;
+  ocr_text?: string;
+  ocr_confidence?: number;
+  created_at?: string;
+  updated_at?: string;
+  is_active: boolean;
+}
+
+export interface PatientAnalysis {
+  patient: Patient;
+  analysis: {
+    rule_severity?: string;
+    ml_severity?: string;
+    confidence?: number;
+    probabilities?: Record<string, number>;
+    method?: string;
+  };
+  transfusion_days?: number;
 }
 
 export interface Donor {
@@ -63,15 +104,52 @@ export interface CallResponse {
 export interface Workflow {
   workflow_id: string;
   patient_id: string;
+  patient_data?: {
+    patient_id: string;
+    name: string;
+    blood_group: string;
+    latitude: number;
+    longitude: number;
+    urgency: string;
+  };
   current_step: string;
   steps: WorkflowStep[];
+  scoring_method?: string;
+  ranked_donors?: Donor[];
+  whatsapp_campaign?: Array<{
+    donor_id: string;
+    name: string;
+    phone: string;
+    status: string;
+    sent_at: string;
+    readiness_score?: number;
+  }>;
+  voice_campaign?: Array<{
+    donor_id: string;
+    name: string;
+    phone: string;
+    status: string;
+    initiated_at: string;
+    readiness_score?: number;
+  }>;
+  donor_responses?: Array<{
+    donor_id: string;
+    response: string;
+    recorded_at: string;
+  }>;
   created_at: string;
   completed_at?: string;
 }
 
+export interface WorkflowInsight {
+  pattern: string;
+  action: string;
+  result: string;
+}
+
 export interface WorkflowStep {
   step_name: string;
-  status: "pending" | "active" | "completed" | "failed";
+  status: "pending" | "in_progress" | "completed" | "failed";
   started_at?: string;
   completed_at?: string;
   details?: string;

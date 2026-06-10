@@ -31,7 +31,7 @@ export default function Home() {
                 <span className="text-[var(--text-primary)] font-medium">2 hours of coordination in 5 minutes.</span>
               </p>
               <div className="flex flex-wrap gap-4">
-                <Link href="/coordinator">
+                <Link href="/admin/coordinator">
                   <Button variant="primary">
                     Launch Dashboard
                   </Button>

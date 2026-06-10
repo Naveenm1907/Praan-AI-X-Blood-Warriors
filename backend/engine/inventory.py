@@ -1,7 +1,8 @@
+from typing import Optional
 from datetime import datetime, timedelta
 
 
-def search_blood_banks(banks: list, blood_group: str, district: str | None = None) -> list:
+def search_blood_banks(banks: list, blood_group: str, district: Optional[str] = None) -> list:
     results = []
     for bank in banks:
         if district and bank["district"].lower() != district.lower():
@@ -19,7 +20,7 @@ def search_blood_banks(banks: list, blood_group: str, district: str | None = Non
     return results
 
 
-def reserve_units(banks: list, bank_id: str, blood_group: str, units: int) -> dict | None:
+def reserve_units(banks: list, bank_id: str, blood_group: str, units: int) -> Optional[dict]:
     for bank in banks:
         if bank["bank_id"] == bank_id:
             inv = bank.get("inventory", {}).get(blood_group)
